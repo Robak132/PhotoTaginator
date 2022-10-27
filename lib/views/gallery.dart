@@ -13,9 +13,12 @@ class Gallery extends StatefulWidget {
   State<Gallery> createState() => _GalleryState();
 }
 
-class _GalleryState extends State<Gallery> {
+class _GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin<Gallery> {
   final List<String> _images = [];
   bool _loading = false;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -67,6 +70,7 @@ class _GalleryState extends State<Gallery> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return _loading
         ? const Center(
             child: CircularProgressIndicator(),
