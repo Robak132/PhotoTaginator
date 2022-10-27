@@ -13,7 +13,8 @@ class SinglePhotoView extends StatefulWidget {
     this.initialIndex = 0,
     required this.galleryItems,
     this.scrollDirection = Axis.horizontal,
-  }) : pageController = PageController(initialPage: initialIndex), super(key: key);
+  })  : pageController = PageController(initialPage: initialIndex),
+        super(key: key);
 
   final LoadingBuilder? loadingBuilder;
   final BoxDecoration? backgroundDecoration;

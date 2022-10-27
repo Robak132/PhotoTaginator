@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'gallery.dart';
+import 'views/main_view.dart';
 
 void main() => runApp(const MyApp());
 
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       debugShowCheckedModeBanner: false,
-      home: const Gallery(title: 'Untagged'),
+      home: const MainView(),
     );
   }
 }
