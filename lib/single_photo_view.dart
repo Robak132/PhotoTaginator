@@ -61,9 +61,11 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
               scrollDirection: widget.scrollDirection,
             ),
             Container(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(40.0),
+              alignment: Alignment.topCenter,
               child: Text(
-                "Image ${currentIndex + 1}",
+                "Image ${widget.galleryItems[currentIndex]}",
+                textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 17.0,
@@ -82,10 +84,9 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
 
     return PhotoViewGalleryPageOptions(
       imageProvider: PhotoProvider(mediumId: item),
-      initialScale: PhotoViewComputedScale.covered,
-      minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
-      maxScale: PhotoViewComputedScale.covered * 4.1,
-      heroAttributes: const PhotoViewHeroAttributes(tag: "File"),
+      initialScale: PhotoViewComputedScale.contained,
+      minScale: PhotoViewComputedScale.contained,
+      maxScale: PhotoViewComputedScale.covered * 1.8,
     );
   }
 }
