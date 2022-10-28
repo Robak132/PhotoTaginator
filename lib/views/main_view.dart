@@ -51,7 +51,7 @@ class _MainViewState extends State<MainView> {
             ),
           ],
           currentIndex: _bottomNavBarIndex,
-          selectedItemColor: Colors.amber,
+          selectedItemColor: Colors.green,
           onTap: (selectedPageIndex) {
             setState(() {
               _bottomNavBarIndex = selectedPageIndex;

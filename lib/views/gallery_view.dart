@@ -85,55 +85,51 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
           iconTheme: const IconThemeData(color: Colors.black),
         ),
         body: RefreshIndicator(
-        onRefresh: () async => refreshNotWait(),
-        child: _loading
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
-            : SafeArea(
-                child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Expanded(
-                      child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                          ),
-                          child: GridView.builder(
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              crossAxisSpacing: 5,
-                              mainAxisSpacing: 5,
-                            ),
-                            itemBuilder: (context, index) {
-                              return RawMaterialButton(
-                                child: InkWell(
-                                  child: Ink.image(
-                                    image: ThumbnailProvider(mediumId: _images[index], highQuality: true),
-                                    height: 300,
-                                    fit: BoxFit.cover,
-                                  ),
+            onRefresh: () async => refreshNotWait(),
+            child: _loading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : SafeArea(
+                    child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Expanded(
+                          child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                              ),
+                              child: GridView.builder(
+                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: 5,
+                                  mainAxisSpacing: 5,
                                 ),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => SinglePhotoView(
-                                              galleryItems: _images,
-                                              backgroundDecoration: const BoxDecoration(
-                                                color: Colors.black,
-                                              ),
-                                              initialIndex: index,
-                                              scrollDirection: Axis.horizontal,
-                                            )),
+                                itemBuilder: (context, index) {
+                                  return RawMaterialButton(
+                                    child: InkWell(
+                                      child: Ink.image(
+                                        image: ThumbnailProvider(mediumId: _images[index], highQuality: true),
+                                        height: 300,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => SinglePhotoView(
+                                                  galleryItems: _images,
+                                                  initialIndex: index,
+                                                )),
+                                      );
+                                    },
                                   );
                                 },
-                              );
-                            },
-                            itemCount: _images.length,
-                          )))
-                ],
-              ))));
+                                itemCount: _images.length,
+                              )))
+                    ],
+                  ))));
   }
 }

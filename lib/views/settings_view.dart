@@ -78,9 +78,7 @@ class _MSettingViewState extends State<SettingsView> with AutomaticKeepAliveClie
                         ),
                         child: Card(
                           margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                          child: ListTile(
-                            title: Text(_tags[index])
-                          ),
+                          child: ListTile(title: Text(_tags[index])),
                         ),
                       );
                     },

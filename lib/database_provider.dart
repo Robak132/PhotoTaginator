@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -18,8 +19,17 @@ class DatabaseProvider {
 
   static FutureOr<void> createDatabase(Database database) {
     log("Creating database");
-    database.execute('CREATE TABLE IF NOT EXISTS IMAGES (ID INTEGER PRIMARY KEY, NAME TEXT)');
-    database.execute('CREATE TABLE IF NOT EXISTS TAGS (ID INTEGER PRIMARY KEY, NAME TEXT)');
+    database.execute('CREATE TABLE IMAGES IF NOT EXISTS ('
+        'ID INTEGER NOT NULL PRIMARY KEY, '
+        'NAME TEXT NOT NULL, '
+        'IMAGE_INDEX TEXT NOT NULL)');
+    database.execute('CREATE TABLE TAGS IF NOT EXISTS ('
+        'ID INTEGER NOT NULL PRIMARY KEY, '
+        'NAME TEXT NOT NULL UNIQUE)');
+    database.execute('CREATE TABLE CONNECTIONS IF NOT EXISTS ('
+        'IMAGE_ID INTEGER NOT NULL constraint CONNECTIONS_TAGS_fk references TAGS, '
+        'TAG_ID INTEGER NOT NULL constraint CONNECTIONS_IMAGES_fk references IMAGES,'
+        'CONSTRAINT CONNECTIONS_PK PRIMARY KEY (IMAGE_ID, TAG_ID))');
     database.insert('TAGS', {"ID": 1, "NAME": "Asterix"});
     database.insert('TAGS', {"ID": 2, "NAME": "Obelix"});
     database.insert('TAGS', {"ID": 3, "NAME": "Kerfuś"});
@@ -37,10 +47,11 @@ class DatabaseProvider {
   static Future<Database> _connect() async {
     Database database = await databaseFactory.openDatabase("database.sqlite",
         options: OpenDatabaseOptions(
-            version: 2,
+            version: 3,
             onCreate: (Database database, int version) => createDatabase(database),
             onOpen: (Database database) => log("Opening database"),
-            onUpgrade: (Database database, int oldVersion, int newVersion) => updateDatabase(database, oldVersion, newVersion)));
+            onUpgrade: (Database database, int oldVersion, int newVersion) =>
+                updateDatabase(database, oldVersion, newVersion)));
     log("Database loaded");
     return database;
   }
