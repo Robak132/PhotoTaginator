@@ -29,22 +29,20 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  flutter_svg: ^0.21.0-nullsafety.0
-  image_size_getter: 2.1.2
+  sqflite: 2.2.0+2
+  path_provider: 2.0.11
   photo_view: 0.14.0
   image_editor: 1.1.0
-  transparent_image: ^2.0.0
-  permission_handler: ^9.2.0
-  video_player: ^2.1.0
-  photo_gallery: ^1.1.1
-  image_picker: ^0.8.6
+  transparent_image: 2.0.0
+  permission_handler: 9.2.0
+  photo_gallery: 1.1.1
+  image_picker: 0.8.6
+  logging: 1.1.0
+  cupertino_icons: ^1.0.2
   flutter:
     sdk: flutter
-
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:

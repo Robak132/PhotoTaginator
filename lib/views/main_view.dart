@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:photo_taginator/views/gallery.dart';
+import 'package:photo_taginator/views/settings_view.dart';
 
 class MainView extends StatefulWidget {
   const MainView({Key? key}) : super(key: key);
@@ -16,7 +17,7 @@ class _MainViewState extends State<MainView> {
   @override
   void initState() {
     super.initState();
-    _views = [Container(), const Gallery(), Container()];
+    _views = [const SettingsView(), const Gallery(), Container()];
     _pageController = PageController(initialPage: _bottomNavBarIndex);
   }
 
@@ -29,14 +30,6 @@ class _MainViewState extends State<MainView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          title: const Text('Gallery'),
-          iconTheme: const IconThemeData(color: Colors.black),
-        ),
-        // Body area
         body: PageView(
           controller: _pageController,
           physics: const NeverScrollableScrollPhysics(),
@@ -46,7 +39,7 @@ class _MainViewState extends State<MainView> {
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.settings),
-              label: 'Tags',
+              label: 'Settings',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
