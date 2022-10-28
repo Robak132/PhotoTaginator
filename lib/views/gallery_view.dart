@@ -6,14 +6,14 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_gallery/photo_gallery.dart';
 import 'package:photo_taginator/views/single_photo_view.dart';
 
-class Gallery extends StatefulWidget {
-  const Gallery({Key? key}) : super(key: key);
+class GalleryView extends StatefulWidget {
+  const GalleryView({Key? key}) : super(key: key);
 
   @override
-  State<Gallery> createState() => _GalleryState();
+  State<GalleryView> createState() => _GalleryViewState();
 }
 
-class _GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin<Gallery> {
+class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClientMixin<GalleryView> {
   final List<String> _images = [];
   bool _loading = false;
 

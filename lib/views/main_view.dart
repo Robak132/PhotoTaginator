@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:photo_taginator/views/gallery.dart';
+import 'package:photo_taginator/views/gallery_view.dart';
 import 'package:photo_taginator/views/settings_view.dart';
 
 class MainView extends StatefulWidget {
@@ -17,7 +17,7 @@ class _MainViewState extends State<MainView> {
   @override
   void initState() {
     super.initState();
-    _views = [const SettingsView(), const Gallery(), Container()];
+    _views = [const SettingsView(), const GalleryView(), Container()];
     _pageController = PageController(initialPage: _bottomNavBarIndex);
   }
 
