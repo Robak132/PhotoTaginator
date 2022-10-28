@@ -32,7 +32,6 @@ class _GalleryState extends State<Gallery> with AutomaticKeepAliveClientMixin<Ga
       setState(() {
         _loading = false;
       });
-      return;
     }
 
     List<Album> albums = await PhotoGallery.listAlbums(mediumType: MediumType.image);

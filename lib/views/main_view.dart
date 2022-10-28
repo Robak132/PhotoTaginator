@@ -10,7 +10,7 @@ class MainView extends StatefulWidget {
 
 class _MainViewState extends State<MainView> {
   int _bottomNavBarIndex = 1;
-  late PageController _pageController;
+  PageController? _pageController;
   List<Widget> _views = [];
 
   @override
@@ -22,7 +22,7 @@ class _MainViewState extends State<MainView> {
 
   @override
   void dispose() {
-    _pageController.dispose();
+    _pageController!.dispose();
     super.dispose();
   }
 
@@ -33,10 +33,7 @@ class _MainViewState extends State<MainView> {
           elevation: 0,
           backgroundColor: Colors.white,
           centerTitle: true,
-          title: const Text(
-            'Gallery',
-            style: TextStyle(color: Colors.black),
-          ),
+          title: const Text('Gallery'),
           iconTheme: const IconThemeData(color: Colors.black),
         ),
         // Body area
@@ -61,11 +58,11 @@ class _MainViewState extends State<MainView> {
             ),
           ],
           currentIndex: _bottomNavBarIndex,
-          selectedItemColor: Colors.amber[800],
+          selectedItemColor: Colors.amber,
           onTap: (selectedPageIndex) {
             setState(() {
               _bottomNavBarIndex = selectedPageIndex;
-              _pageController.jumpToPage(selectedPageIndex);
+              _pageController!.jumpToPage(selectedPageIndex);
             });
           },
         ));
