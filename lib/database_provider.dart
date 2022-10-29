@@ -19,27 +19,30 @@ class DatabaseProvider {
 
   static FutureOr<void> createDatabase(Database database) {
     log("Creating database");
-    database.execute('CREATE TABLE IMAGES IF NOT EXISTS ('
-        'ID INTEGER NOT NULL PRIMARY KEY, '
-        'NAME TEXT NOT NULL)');
-    database.execute('CREATE TABLE TAGS IF NOT EXISTS ('
+    database.execute("DELETE FROM IMAGES");
+    database.execute("DELETE FROM TAGS");
+    database.execute("DELETE FROM CONNECTIONS");
+    database.execute("DROP TABLE IMAGES");
+    database.execute("DROP TABLE TAGS");
+    database.execute("DROP TABLE CONNECTIONS");
+    database.execute('CREATE TABLE IF NOT EXISTS IMAGES (ID INTEGER NOT NULL PRIMARY KEY)');
+    database.execute('CREATE TABLE IF NOT EXISTS TAGS ('
         'ID INTEGER NOT NULL PRIMARY KEY, '
         'NAME TEXT NOT NULL UNIQUE)');
-    database.execute('CREATE TABLE CONNECTIONS IF NOT EXISTS ('
+    database.execute('CREATE TABLE IF NOT EXISTS CONNECTIONS ('
         'IMAGE_ID INTEGER NOT NULL constraint CONNECTIONS_TAGS_fk references TAGS, '
         'TAG_ID INTEGER NOT NULL constraint CONNECTIONS_IMAGES_fk references IMAGES,'
         'CONSTRAINT CONNECTIONS_PK PRIMARY KEY (IMAGE_ID, TAG_ID))');
     database.insert('TAGS', {"ID": 1, "NAME": "Asterix"});
     database.insert('TAGS', {"ID": 2, "NAME": "Obelix"});
-    database.insert('TAGS', {"ID": 3, "NAME": "Kerfuś"});
+    database.insert('TAGS', {"ID": 3, "NAME": "Nowy"});
+    database.insert('CONNECTIONS', {"IMAGE_ID": '32013', "TAG_ID": 1});
     log("Database created");
   }
 
   static FutureOr<void> updateDatabase(Database database, int oldVersion, int newVersion) {
     log("Updating database...");
     if (oldVersion < newVersion) {
-      database.rawDelete("DELETE FROM IMAGES");
-      database.rawDelete("DELETE FROM TAGS");
       createDatabase(database);
     }
   }
@@ -47,7 +50,7 @@ class DatabaseProvider {
   static Future<Database> _connect() async {
     Database database = await databaseFactory.openDatabase("database.sqlite",
         options: OpenDatabaseOptions(
-            version: 4,
+            version: 9,
             onCreate: (Database database, int version) => createDatabase(database),
             onOpen: (Database database) => log("Opening database"),
             onUpgrade: (Database database, int oldVersion, int newVersion) =>

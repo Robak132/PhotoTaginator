@@ -78,30 +78,27 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                               ),
                               child: Consumer<ImageCollection>(builder: (context, imageCollection, child) {
                                 return GridView.builder(
-                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
-                                    crossAxisSpacing: 5,
-                                    mainAxisSpacing: 5,
-                                  ),
-                                  itemBuilder: (context, index) {
-                                    return RawMaterialButton(
-                                      child: InkWell(
-                                        child: Ink.image(
-                                          image: ThumbnailProvider(mediumId: imageCollection[index], highQuality: true),
-                                          height: 300,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => SinglePhotoView(initialIndex: index)),
-                                        );
-                                      },
-                                    );
-                                  },
-                                  itemCount: imageCollection.length,
-                                );
+                                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3,
+                                      crossAxisSpacing: 5,
+                                      mainAxisSpacing: 5,
+                                    ),
+                                    itemBuilder: (context, index) {
+                                      return RawMaterialButton(
+                                          child: InkWell(
+                                              child: Ink.image(
+                                                  image: ThumbnailProvider(
+                                                      mediumId: imageCollection[index].id, highQuality: true),
+                                                  height: 300,
+                                                  fit: BoxFit.cover)),
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) => SinglePhotoView(initialIndex: index)));
+                                          });
+                                    },
+                                    itemCount: imageCollection.length);
                               })))
                     ],
                   ))));

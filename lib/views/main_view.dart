@@ -30,34 +30,20 @@ class _MainViewState extends State<MainView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          children: _views,
-        ),
+        body: PageView(controller: _pageController, physics: const NeverScrollableScrollPhysics(), children: _views),
         bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Gallery',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.photo_album_rounded),
-              label: 'Albums',
-            ),
-          ],
-          currentIndex: _bottomNavBarIndex,
-          selectedItemColor: Colors.green,
-          onTap: (selectedPageIndex) {
-            setState(() {
-              _bottomNavBarIndex = selectedPageIndex;
-              _pageController!.jumpToPage(selectedPageIndex);
-            });
-          },
-        ));
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Gallery'),
+              BottomNavigationBarItem(icon: Icon(Icons.photo_album_rounded), label: 'Albums')
+            ],
+            currentIndex: _bottomNavBarIndex,
+            selectedItemColor: Colors.green,
+            onTap: (selectedPageIndex) {
+              setState(() {
+                _bottomNavBarIndex = selectedPageIndex;
+                _pageController!.jumpToPage(selectedPageIndex);
+              });
+            }));
   }
 }

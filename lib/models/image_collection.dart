@@ -6,13 +6,13 @@ import 'package:photo_taginator/database_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class ImageCollection extends ChangeNotifier {
-  final List<String> _images = [];
+  final List<TaggedImage> _images = [];
   late final Database database;
 
   get length => _images.length;
   get allImages => _images;
-  String operator [](int index) => _images[index];
-  void operator []=(int index, String value) => _images[index] = value;
+  TaggedImage operator [](int index) => _images[index];
+  void operator []=(int index, TaggedImage value) => _images[index] = value;
 
   ImageCollection() {
     refresh();
@@ -26,8 +26,10 @@ class ImageCollection extends ChangeNotifier {
       final List<Medium> mediums = (await album.listMedia()).items;
       for (Medium media in mediums) {
         if (!await checkCorruptedImage(media)) {
-          add(media.id);
-          notifyListeners();
+          List map = await database.rawQuery(
+              "SELECT T.* FROM CONNECTIONS C JOIN TAGS T ON (C.TAG_ID = T.ID) WHERE C.IMAGE_ID = ?", [media.id]);
+          List<Tag> tags = [for (Map object in map) Tag(id: object["ID"], name: object["NAME"])];
+          add(TaggedImage(id: media.id, tags: tags));
         }
       }
     }
@@ -45,8 +47,8 @@ class ImageCollection extends ChangeNotifier {
     }
   }
 
-  void add(String imageID) {
-    _images.add(imageID);
+  void add(TaggedImage image) {
+    _images.add(image);
     notifyListeners();
   }
 
@@ -56,8 +58,22 @@ class ImageCollection extends ChangeNotifier {
   }
 }
 
-class Image {
+class TaggedImage {
   String id;
+  List<Tag> tags = [];
 
-  Image({required this.id});
+  TaggedImage({required this.id, tags = const <Tag>[]}) {
+    this.tags.addAll(tags);
+  }
+
+  bool containsTagName(String name) {
+    return tags.any((tag) => tag.name == name);
+  }
+}
+
+class Tag {
+  int id;
+  String name;
+
+  Tag({required this.id, required this.name});
 }

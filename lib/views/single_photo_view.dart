@@ -21,73 +21,59 @@ class SinglePhotoView extends StatefulWidget {
 class _SinglePhotoViewState extends State<SinglePhotoView> {
   late int currentIndex = widget.initialIndex;
 
-  void onPageChanged(int index) {
+  Future<void> onPageChanged(ImageCollection imageCollection, int index) async {
+    // await imageCollection.fetchTags(imageCollection[index]);
     setState(() {
       currentIndex = index;
     });
   }
 
-  void onTap(int index) {
+  void onTap(int index, ImageCollection imageCollection) {
     switch (index) {
       case 0:
       case 1:
       case 2:
-        showDialog(
-            context: context,
-            builder: (context) {
-              return const TagDialog();
-            });
+        showDialog(context: context, builder: (context) => TagDialog(image: imageCollection[currentIndex]));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: onTap,
-        backgroundColor: Colors.white,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black,
-        showUnselectedLabels: false,
-        showSelectedLabels: false,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.share), label: 'Share'),
-          BottomNavigationBarItem(icon: Icon(Icons.delete), label: 'Remove'),
-          BottomNavigationBarItem(icon: Icon(Icons.tag), label: 'Tag')
-        ],
-      ),
-      body: Container(
-          constraints: BoxConstraints.expand(
-            height: MediaQuery.of(context).size.height,
-          ),
-          child: Consumer<ImageCollection>(builder: (context, imageCollection, child) {
-            return Stack(
-              alignment: Alignment.bottomRight,
-              children: <Widget>[
+    return Consumer<ImageCollection>(builder: (context, imageCollection, child) {
+      return Scaffold(
+          bottomNavigationBar: BottomNavigationBar(
+              onTap: (index) => onTap(index, imageCollection),
+              backgroundColor: Colors.white,
+              selectedItemColor: Colors.black,
+              unselectedItemColor: Colors.black,
+              showUnselectedLabels: false,
+              showSelectedLabels: false,
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(icon: Icon(Icons.share), label: 'Share'),
+                BottomNavigationBarItem(icon: Icon(Icons.delete), label: 'Remove'),
+                BottomNavigationBarItem(icon: Icon(Icons.tag), label: 'Tag')
+              ]),
+          body: Container(
+              constraints: BoxConstraints.expand(height: MediaQuery.of(context).size.height),
+              child: Stack(alignment: Alignment.center, children: <Widget>[
                 PhotoViewGallery.builder(
-                  scrollPhysics: const BouncingScrollPhysics(),
-                  builder: (context, index) => PhotoViewGalleryPageOptions(
-                      imageProvider: PhotoProvider(mediumId: imageCollection[index]),
-                      initialScale: PhotoViewComputedScale.contained,
-                      minScale: PhotoViewComputedScale.contained,
-                      maxScale: PhotoViewComputedScale.covered * 1.8),
-                  itemCount: imageCollection.length,
-                  pageController: widget.pageController,
-                  onPageChanged: onPageChanged,
-                  scrollDirection: Axis.horizontal,
-                ),
+                    scrollPhysics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: imageCollection.length,
+                    pageController: widget.pageController,
+                    gaplessPlayback: true,
+                    onPageChanged: (index) => onPageChanged(imageCollection, index),
+                    scrollDirection: Axis.horizontal,
+                    builder: (context, index) => PhotoViewGalleryPageOptions(
+                        imageProvider: PhotoProvider(mediumId: imageCollection[index].id),
+                        initialScale: PhotoViewComputedScale.contained,
+                        minScale: PhotoViewComputedScale.contained,
+                        maxScale: PhotoViewComputedScale.covered * 1.8)),
                 Container(
-                  padding: const EdgeInsets.all(40.0),
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    "Image ${imageCollection[currentIndex]}",
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white, fontSize: 17.0, decoration: null),
-                  ),
-                )
-              ],
-            );
-          })),
-    );
+                    padding: const EdgeInsets.all(40.0),
+                    alignment: Alignment.topCenter,
+                    child: Text("Image ${imageCollection[currentIndex]}",
+                        textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 17.0)))
+              ])));
+    });
   }
 }
