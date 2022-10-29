@@ -1,47 +1,22 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:photo_taginator/database_provider.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:photo_taginator/models/tags_collection.dart';
+import 'package:provider/provider.dart';
 
 class TagDialog extends StatefulWidget {
   const TagDialog({
     super.key,
-    required this.cities,
-    required this.selectedCities,
-    required this.onSelectedCitiesListChanged,
   });
-
-  final List<String> cities;
-  final List<String> selectedCities;
-  final ValueChanged<List<String>> onSelectedCitiesListChanged;
 
   @override
   State<TagDialog> createState() => _TagDialogState();
 }
 
 class _TagDialogState extends State<TagDialog> {
-  late Database _database;
-  List<String> _allTags = [];
-  List<String> _currentTags = [];
   Map<String, bool> valuesMap = {};
 
   @override
   void initState() {
     super.initState();
-    refresh();
-  }
-
-  Future<void> refresh() async {
-    log("Refresh");
-    _database = await DatabaseProvider.instance.getDatabase();
-    List query = await _database.query("TAGS", columns: ["NAME"]);
-    List<String> tags = query.map((entity) => entity["NAME"] as String).toList();
-    setState(() {
-      _allTags = tags;
-      _currentTags = tags;
-      valuesMap = {for (String tag in _allTags) tag: _currentTags.contains(tag)};
-    });
   }
 
   @override
@@ -60,21 +35,23 @@ class _TagDialogState extends State<TagDialog> {
           ),
           body: Column(
             children: [
-              Expanded(
-                child: ListView.builder(
-                    itemCount: _allTags.length,
+              Expanded(child: Consumer<TagCollection>(builder: (context, tagCollection, child) {
+                final List<String> allTags = tagCollection.allTags;
+                final List<String> currentTags = tagCollection.allTags;
+                valuesMap = {for (String tag in allTags) tag: currentTags.contains(tag)};
+
+                return ListView.builder(
+                    itemCount: allTags.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final String tag = _allTags[index];
+                      final String tag = allTags[index];
                       return CheckboxListTile(
                           title: Text(tag),
                           value: valuesMap[tag],
                           onChanged: (value) {
-                            setState(() {
-                              valuesMap[tag] = value!;
-                            });
+                            valuesMap[tag] = value!;
                           });
-                    }),
-              ),
+                    });
+              })),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);

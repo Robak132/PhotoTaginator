@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:photo_gallery/photo_gallery.dart';
 import 'package:photo_taginator/dialogs/tag_dialog.dart';
+import 'package:photo_taginator/models/image_collection.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:provider/provider.dart';
 
 class SinglePhotoView extends StatefulWidget {
-  SinglePhotoView({Key? key, this.initialIndex = 0, required this.galleryItems})
+  SinglePhotoView({Key? key, this.initialIndex = 0})
       : pageController = PageController(initialPage: initialIndex),
         super(key: key);
 
   final int initialIndex;
   final PageController pageController;
-  final List<String> galleryItems;
 
   @override
   State<StatefulWidget> createState() => _SinglePhotoViewState();
@@ -26,9 +27,6 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
     });
   }
 
-  List<String> allCities = ['Alpha', 'Beta', 'Gamma'];
-  List<String> selectedCities = [];
-
   void onTap(int index) {
     switch (index) {
       case 0:
@@ -37,12 +35,7 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
         showDialog(
             context: context,
             builder: (context) {
-              return TagDialog(
-                  cities: allCities,
-                  selectedCities: selectedCities,
-                  onSelectedCitiesListChanged: (cities) {
-                    selectedCities = cities;
-                  });
+              return const TagDialog();
             });
     }
   }
@@ -60,54 +53,41 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.share), label: 'Share'),
           BottomNavigationBarItem(icon: Icon(Icons.delete), label: 'Remove'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.tag),
-            label: 'Tag',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.tag), label: 'Tag')
         ],
       ),
       body: Container(
-        constraints: BoxConstraints.expand(
-          height: MediaQuery.of(context).size.height,
-        ),
-        child: Stack(
-          alignment: Alignment.bottomRight,
-          children: <Widget>[
-            PhotoViewGallery.builder(
-              scrollPhysics: const BouncingScrollPhysics(),
-              builder: _buildItem,
-              itemCount: widget.galleryItems.length,
-              pageController: widget.pageController,
-              onPageChanged: onPageChanged,
-              scrollDirection: Axis.horizontal,
-            ),
-            Container(
-              padding: const EdgeInsets.all(40.0),
-              alignment: Alignment.topCenter,
-              child: Text(
-                "Image ${widget.galleryItems[currentIndex]}",
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 17.0,
-                  decoration: null,
+          constraints: BoxConstraints.expand(
+            height: MediaQuery.of(context).size.height,
+          ),
+          child: Consumer<ImageCollection>(builder: (context, imageCollection, child) {
+            return Stack(
+              alignment: Alignment.bottomRight,
+              children: <Widget>[
+                PhotoViewGallery.builder(
+                  scrollPhysics: const BouncingScrollPhysics(),
+                  builder: (context, index) => PhotoViewGalleryPageOptions(
+                      imageProvider: PhotoProvider(mediumId: imageCollection[index]),
+                      initialScale: PhotoViewComputedScale.contained,
+                      minScale: PhotoViewComputedScale.contained,
+                      maxScale: PhotoViewComputedScale.covered * 1.8),
+                  itemCount: imageCollection.length,
+                  pageController: widget.pageController,
+                  onPageChanged: onPageChanged,
+                  scrollDirection: Axis.horizontal,
                 ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
-    String item = widget.galleryItems[index];
-
-    return PhotoViewGalleryPageOptions(
-      imageProvider: PhotoProvider(mediumId: item),
-      initialScale: PhotoViewComputedScale.contained,
-      minScale: PhotoViewComputedScale.contained,
-      maxScale: PhotoViewComputedScale.covered * 1.8,
+                Container(
+                  padding: const EdgeInsets.all(40.0),
+                  alignment: Alignment.topCenter,
+                  child: Text(
+                    "Image ${imageCollection[currentIndex]}",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white, fontSize: 17.0, decoration: null),
+                  ),
+                )
+              ],
+            );
+          })),
     );
   }
 }

@@ -1,10 +1,11 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_gallery/photo_gallery.dart';
+import 'package:photo_taginator/models/image_collection.dart';
 import 'package:photo_taginator/views/single_photo_view.dart';
+import 'package:provider/provider.dart';
 
 class GalleryView extends StatefulWidget {
   const GalleryView({Key? key}) : super(key: key);
@@ -14,7 +15,6 @@ class GalleryView extends StatefulWidget {
 }
 
 class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClientMixin<GalleryView> {
-  final List<String> _images = [];
   bool _loading = false;
 
   @override
@@ -37,19 +37,6 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
         _loading = false;
       });
     }
-
-    List<Album> albums = await PhotoGallery.listAlbums(mediumType: MediumType.image);
-    for (Album album in albums) {
-      final List<Medium> mediums = (await album.listMedia()).items;
-      for (Medium media in mediums) {
-        if (!await checkCorruptedImage(media)) {
-          setState(() {
-            _images.add(media.id);
-            _loading = false;
-          });
-        }
-      }
-    }
   }
 
   Future<bool> _promptPermissionSetting() async {
@@ -58,17 +45,6 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
       return true;
     }
     return false;
-  }
-
-  Future<bool> checkCorruptedImage(Medium media) async {
-    try {
-      await media.getThumbnail();
-      return false;
-    } catch (ex) {
-      var corrupted = await media.getFile();
-      log("Corrupted image: ${media.id}, path: ${corrupted.path}");
-      return true;
-    }
   }
 
   @override
@@ -86,7 +62,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
         ),
         body: RefreshIndicator(
             onRefresh: () async => refreshNotWait(),
-            child: _loading
+            child: false
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
@@ -100,35 +76,33 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                               decoration: const BoxDecoration(
                                 color: Colors.white,
                               ),
-                              child: GridView.builder(
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  crossAxisSpacing: 5,
-                                  mainAxisSpacing: 5,
-                                ),
-                                itemBuilder: (context, index) {
-                                  return RawMaterialButton(
-                                    child: InkWell(
-                                      child: Ink.image(
-                                        image: ThumbnailProvider(mediumId: _images[index], highQuality: true),
-                                        height: 300,
-                                        fit: BoxFit.cover,
+                              child: Consumer<ImageCollection>(builder: (context, imageCollection, child) {
+                                return GridView.builder(
+                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 5,
+                                    mainAxisSpacing: 5,
+                                  ),
+                                  itemBuilder: (context, index) {
+                                    return RawMaterialButton(
+                                      child: InkWell(
+                                        child: Ink.image(
+                                          image: ThumbnailProvider(mediumId: imageCollection[index], highQuality: true),
+                                          height: 300,
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => SinglePhotoView(
-                                                  galleryItems: _images,
-                                                  initialIndex: index,
-                                                )),
-                                      );
-                                    },
-                                  );
-                                },
-                                itemCount: _images.length,
-                              )))
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => SinglePhotoView(initialIndex: index)),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  itemCount: imageCollection.length,
+                                );
+                              })))
                     ],
                   ))));
   }

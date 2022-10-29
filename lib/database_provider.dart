@@ -21,8 +21,7 @@ class DatabaseProvider {
     log("Creating database");
     database.execute('CREATE TABLE IMAGES IF NOT EXISTS ('
         'ID INTEGER NOT NULL PRIMARY KEY, '
-        'NAME TEXT NOT NULL, '
-        'IMAGE_INDEX TEXT NOT NULL)');
+        'NAME TEXT NOT NULL)');
     database.execute('CREATE TABLE TAGS IF NOT EXISTS ('
         'ID INTEGER NOT NULL PRIMARY KEY, '
         'NAME TEXT NOT NULL UNIQUE)');
@@ -33,10 +32,11 @@ class DatabaseProvider {
     database.insert('TAGS', {"ID": 1, "NAME": "Asterix"});
     database.insert('TAGS', {"ID": 2, "NAME": "Obelix"});
     database.insert('TAGS', {"ID": 3, "NAME": "Kerfuś"});
+    log("Database created");
   }
 
   static FutureOr<void> updateDatabase(Database database, int oldVersion, int newVersion) {
-    log("Updating database");
+    log("Updating database...");
     if (oldVersion < newVersion) {
       database.rawDelete("DELETE FROM IMAGES");
       database.rawDelete("DELETE FROM TAGS");
@@ -47,7 +47,7 @@ class DatabaseProvider {
   static Future<Database> _connect() async {
     Database database = await databaseFactory.openDatabase("database.sqlite",
         options: OpenDatabaseOptions(
-            version: 3,
+            version: 4,
             onCreate: (Database database, int version) => createDatabase(database),
             onOpen: (Database database) => log("Opening database"),
             onUpgrade: (Database database, int oldVersion, int newVersion) =>
