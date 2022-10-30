@@ -54,8 +54,25 @@ class TaggedImageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> update(TaggedImage image) async {
+    int index = _images.indexWhere((element) => element.id == image.id);
+    _images[index] = image;
+    await updateImage(image);
+    notifyListeners();
+  }
+
   void removeAt(int index) {
     _images.removeAt(index);
     notifyListeners();
+  }
+
+  Future<void> updateImage(TaggedImage image) async {
+    Database database = await DatabaseProvider().getDatabase();
+    Batch batch = database.batch();
+    batch.delete("CONNECTIONS", where: "IMAGE_ID = ?", whereArgs: [image.id]);
+    for (var tag in image.tags) {
+      batch.insert("CONNECTIONS", {"IMAGE_ID": image.id, "TAG_ID": tag.id});
+    }
+    batch.commit(continueOnError: true);
   }
 }

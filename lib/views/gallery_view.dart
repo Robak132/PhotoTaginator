@@ -15,8 +15,6 @@ class GalleryView extends StatefulWidget {
 }
 
 class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClientMixin<GalleryView> {
-  bool _loading = false;
-
   @override
   bool get wantKeepAlive => true;
 
@@ -31,12 +29,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
   }
 
   Future<void> refresh() async {
-    _loading = true;
-    if (!await _promptPermissionSetting()) {
-      setState(() {
-        _loading = false;
-      });
-    }
+    await _promptPermissionSetting();
   }
 
   Future<bool> _promptPermissionSetting() async {
@@ -52,14 +45,13 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
     super.build(context);
     return Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: false,
-          flexibleSpace: Container(),
-          foregroundColor: Colors.black,
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          title: const Text('Gallery'),
-          iconTheme: const IconThemeData(color: Colors.black),
-        ),
+            automaticallyImplyLeading: false,
+            flexibleSpace: Container(),
+            foregroundColor: Colors.black,
+            backgroundColor: Colors.white,
+            centerTitle: true,
+            title: const Text('Gallery'),
+            iconTheme: const IconThemeData(color: Colors.black)),
         body: RefreshIndicator(
             onRefresh: () async => refreshNotWait(),
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <Widget>[

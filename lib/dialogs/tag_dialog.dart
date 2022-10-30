@@ -20,12 +20,19 @@ class _TagDialogState extends State<TagDialog> {
     super.initState();
   }
 
-  void onSubmit(TaggedImageProvider taggedImageProvider, Map<Tag, bool> valueMap) {
-    // final filteredMap = [
-    //   for (MapEntry<Tag, bool> entry in valueMap.entries)
-    //     if (!entry.value) {"IMAGE_ID": widget.image.id, "TAG_ID": entry.key.id}
-    // ];
-    Navigator.pop(context);
+  Future<void> onSubmit(BuildContext context) async {
+    await Provider.of<TaggedImageProvider>(context, listen: false).update(widget.image);
+    if (!mounted) return;
+    Navigator.of(context).pop();
+  }
+
+  void onChanged(Map<Tag, bool> valuesMap, Tag tag, bool newValue) {
+    if (newValue) {
+      widget.image.addTag(tag);
+    } else {
+      widget.image.removeTag(tag);
+    }
+    valuesMap[tag] = newValue;
   }
 
   @override
@@ -43,20 +50,20 @@ class _TagDialogState extends State<TagDialog> {
                 iconTheme: const IconThemeData(color: Colors.black)),
             body: Consumer2<TagProvider, TaggedImageProvider>(
                 builder: (context, tagProvider, taggedImageProvider, child) {
-              final List<Tag> allTags = tagProvider.allTags;
-              final Map<Tag, bool> valuesMap = {for (Tag tag in allTags) tag: widget.image.tags.contains(tag)};
+              List<Tag> tags = tagProvider.allTags;
+              Map<Tag, bool> valuesMap = {for (Tag tag in tags) tag: widget.image.tags.contains(tag)};
 
               return Column(children: [
                 Expanded(
                     child: ListView.builder(
-                        itemCount: allTags.length,
+                        itemCount: tags.length,
                         itemBuilder: (BuildContext context, int index) {
                           return CheckboxListTile(
-                              title: Text(allTags[index].name),
-                              value: valuesMap[allTags[index]],
-                              onChanged: (value) => valuesMap[allTags[index]] = value!);
+                              title: Text(tags[index].name),
+                              value: valuesMap[tags[index]],
+                              onChanged: (value) => onChanged(valuesMap, tags[index], value!));
                         })),
-                ElevatedButton(onPressed: () => onSubmit(taggedImageProvider, valuesMap), child: const Text('Submit'))
+                ElevatedButton(onPressed: () async => onSubmit(context), child: const Text('Done'))
               ]);
             })));
   }

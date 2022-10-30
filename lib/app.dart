@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'views/main_view.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider<TagProvider>(create: (context) => TagProvider()),

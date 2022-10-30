@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseProvider {
@@ -10,6 +9,9 @@ class DatabaseProvider {
 
   DatabaseProvider._();
 
+  factory DatabaseProvider() {
+    return _instance;
+  }
   static DatabaseProvider get instance => _instance;
 
   Future<Database> getDatabase() async {
@@ -57,50 +59,5 @@ class DatabaseProvider {
                 updateDatabase(database, oldVersion, newVersion)));
     log("Database loaded");
     return database;
-  }
-}
-
-class BatchManager {
-  BatchManager._();
-
-  static Future<void> execute(String script, Database database) async {
-    var component = BatchManager._();
-    Batch batch = database.batch();
-    await component._open(script, batch);
-    batch.commit(continueOnError: true);
-  }
-
-  void _register(String line, Batch batch) {
-    RegExp insertRegex = RegExp(r'INSERT INTO ".*" VALUES(.*)');
-    RegExp valReg = RegExp(r'VALUES(.*)');
-    if (insertRegex.hasMatch(line)) {
-      var match = valReg.firstMatch(line);
-      List<dynamic> data = line.substring(match!.start + 7, match.end - 2).replaceAll("'", "").split(",");
-      var parsedData = [for (var object in data) _parseString(object)];
-      var parsedInsert = line.replaceAll(valReg, "VALUES(${[for (int i = 0; i < data.length; i++) "?"].join(", ")})");
-      batch.rawInsert(parsedInsert, parsedData);
-    } else {
-      batch.execute(line);
-    }
-  }
-
-  dynamic _parseString(String string) {
-    if (string == "NULL") {
-      return null;
-    }
-    return int.tryParse(string) ?? string;
-  }
-
-  Future<void> _open(String dbCreateFile, Batch batch) async {
-    String dbCreateString = await rootBundle.loadString(dbCreateFile);
-    String command = "";
-    for (String line in dbCreateString.split("\n")) {
-      line = line.trim();
-      command = "$command $line";
-      if (line != "" && line[line.length - 1] == ";") {
-        _register(command.trim(), batch);
-        command = "";
-      }
-    }
   }
 }
