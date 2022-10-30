@@ -39,21 +39,19 @@ class _MSettingViewState extends State<SettingsView> with AutomaticKeepAliveClie
                         itemCount: tagCollection.length,
                         itemBuilder: (BuildContext ctx, index) {
                           return Dismissible(
-                            key: UniqueKey(),
-                            direction: DismissDirection.endToStart,
-                            onDismissed: (dismissDirection) => tagCollection.removeAt(index),
-                            background: Container(
-                              color: Colors.red,
-                              margin: const EdgeInsets.symmetric(horizontal: 15),
-                              alignment: Alignment.centerRight,
-                              child: Container(
+                              key: UniqueKey(),
+                              direction: DismissDirection.endToStart,
+                              onDismissed: (dismissDirection) => tagCollection.removeAt(index),
+                              background: Container(
+                                  color: Colors.red,
                                   margin: const EdgeInsets.symmetric(horizontal: 15),
-                                  child: const Icon(Icons.delete, color: Colors.white)),
-                            ),
-                            child: Card(
-                                margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                                child: ListTile(title: Text(tagCollection[index]))),
-                          );
+                                  alignment: Alignment.centerRight,
+                                  child: Container(
+                                      margin: const EdgeInsets.symmetric(horizontal: 15),
+                                      child: const Icon(Icons.delete, color: Colors.white))),
+                              child: Card(
+                                  margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                                  child: ListTile(title: Text(tagCollection[index].name))));
                         }))
               ])));
         }));

@@ -18,7 +18,11 @@ class _TagDialogState extends State<TagDialog> {
     super.initState();
   }
 
-  void onSubmit(ImageCollection imageCollection, Map<String, bool> valueMap) {
+  void onSubmit(ImageCollection imageCollection, Map<Tag, bool> valueMap) {
+    // final filteredMap = [
+    //   for (MapEntry<Tag, bool> entry in valueMap.entries)
+    //     if (!entry.value) {"IMAGE_ID": widget.image.id, "TAG_ID": entry.key.id}
+    // ];
     Navigator.pop(context);
   }
 
@@ -36,8 +40,8 @@ class _TagDialogState extends State<TagDialog> {
                 title: const Text('Manage Tags'),
                 iconTheme: const IconThemeData(color: Colors.black)),
             body: Consumer2<TagCollection, ImageCollection>(builder: (context, tagCollection, imageCollection, child) {
-              final List<String> allTags = tagCollection.allTags;
-              final Map<String, bool> valuesMap = {for (String tag in allTags) tag: widget.image.containsTagName(tag)};
+              final List<Tag> allTags = tagCollection.allTags;
+              final Map<Tag, bool> valuesMap = {for (Tag tag in allTags) tag: widget.image.tags.contains(tag)};
 
               return Column(children: [
                 Expanded(
@@ -45,7 +49,7 @@ class _TagDialogState extends State<TagDialog> {
                         itemCount: allTags.length,
                         itemBuilder: (BuildContext context, int index) {
                           return CheckboxListTile(
-                              title: Text(allTags[index]),
+                              title: Text(allTags[index].name),
                               value: valuesMap[allTags[index]],
                               onChanged: (value) => valuesMap[allTags[index]] = value!);
                         })),

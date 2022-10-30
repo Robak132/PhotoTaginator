@@ -4,13 +4,15 @@ import 'package:flutter/foundation.dart';
 import 'package:photo_taginator/database_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
+import 'image_collection.dart';
+
 class TagCollection extends ChangeNotifier {
-  final List<String> _tags = [];
+  final List<Tag> _tags = [];
 
   get length => _tags.length;
   get allTags => _tags;
-  String operator [](int index) => _tags[index];
-  void operator []=(int index, String value) => _tags[index] = value;
+  Tag operator [](int index) => _tags[index];
+  void operator []=(int index, Tag value) => _tags[index] = value;
 
   TagCollection() {
     refresh();
@@ -19,16 +21,16 @@ class TagCollection extends ChangeNotifier {
   Future<void> refresh() async {
     log("Loading tags from database...");
     Database database = await DatabaseProvider.instance.getDatabase();
-    List query = await database.query("TAGS", columns: ["NAME"]);
+    List query = await database.query("TAGS", columns: ["ID", "NAME"]);
     _tags.clear();
-    for (String tag in query.map((entity) => entity["NAME"])) {
+    for (Tag tag in query.map((entity) => Tag(id: entity["ID"], name: entity["NAME"]))) {
       _tags.add(tag);
       notifyListeners();
     }
     log("Tags loaded");
   }
 
-  void add(String tag) {
+  void add(Tag tag) {
     _tags.add(tag);
     notifyListeners();
   }
