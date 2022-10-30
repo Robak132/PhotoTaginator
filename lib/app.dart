@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:photo_taginator/models/image_collection.dart';
-import 'package:photo_taginator/models/tags_collection.dart';
+import 'package:photo_taginator/providers/tag_provider.dart';
+import 'package:photo_taginator/providers/tagged_image_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'views/main_view.dart';
@@ -8,8 +8,8 @@ import 'views/main_view.dart';
 void main() {
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider<TagCollection>(create: (context) => TagCollection()),
-      ChangeNotifierProvider<ImageCollection>(create: (context) => ImageCollection()),
+      ChangeNotifierProvider<TagProvider>(create: (context) => TagProvider()),
+      ChangeNotifierProvider<TaggedImageProvider>(create: (context) => TaggedImageProvider()),
     ],
     child: const MyApp(),
   ));

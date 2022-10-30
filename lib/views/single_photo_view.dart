@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:photo_gallery/photo_gallery.dart';
 import 'package:photo_taginator/dialogs/tag_dialog.dart';
-import 'package:photo_taginator/models/image_collection.dart';
+import 'package:photo_taginator/providers/tagged_image_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
@@ -21,28 +21,28 @@ class SinglePhotoView extends StatefulWidget {
 class _SinglePhotoViewState extends State<SinglePhotoView> {
   late int currentIndex = widget.initialIndex;
 
-  Future<void> onPageChanged(ImageCollection imageCollection, int index) async {
-    // await imageCollection.fetchTags(imageCollection[index]);
+  Future<void> onPageChanged(TaggedImageProvider taggedImageProvider, int index) async {
+    // await taggedImageProvider.fetchTags(taggedImageProvider[index]);
     setState(() {
       currentIndex = index;
     });
   }
 
-  void onTap(int index, ImageCollection imageCollection) {
+  void onTap(int index, TaggedImageProvider taggedImageProvider) {
     switch (index) {
       case 0:
       case 1:
       case 2:
-        showDialog(context: context, builder: (context) => TagDialog(image: imageCollection[currentIndex]));
+        showDialog(context: context, builder: (context) => TagDialog(image: taggedImageProvider[currentIndex]));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ImageCollection>(builder: (context, imageCollection, child) {
+    return Consumer<TaggedImageProvider>(builder: (context, taggedImageProvider, child) {
       return Scaffold(
           bottomNavigationBar: BottomNavigationBar(
-              onTap: (index) => onTap(index, imageCollection),
+              onTap: (index) => onTap(index, taggedImageProvider),
               backgroundColor: Colors.white,
               selectedItemColor: Colors.black,
               unselectedItemColor: Colors.black,
@@ -58,20 +58,20 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
               child: Stack(alignment: Alignment.center, children: <Widget>[
                 PhotoViewGallery.builder(
                     scrollPhysics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: imageCollection.length,
+                    itemCount: taggedImageProvider.length,
                     pageController: widget.pageController,
                     gaplessPlayback: true,
-                    onPageChanged: (index) => onPageChanged(imageCollection, index),
+                    onPageChanged: (index) => onPageChanged(taggedImageProvider, index),
                     scrollDirection: Axis.horizontal,
                     builder: (context, index) => PhotoViewGalleryPageOptions(
-                        imageProvider: PhotoProvider(mediumId: imageCollection[index].id),
+                        imageProvider: PhotoProvider(mediumId: taggedImageProvider[index].id),
                         initialScale: PhotoViewComputedScale.contained,
                         minScale: PhotoViewComputedScale.contained,
                         maxScale: PhotoViewComputedScale.covered * 1.8)),
                 Container(
                     padding: const EdgeInsets.all(40.0),
                     alignment: Alignment.topCenter,
-                    child: Text("Image ${imageCollection[currentIndex]}",
+                    child: Text("Image ${taggedImageProvider[currentIndex]}",
                         textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 17.0)))
               ])));
     });

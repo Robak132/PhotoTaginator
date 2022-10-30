@@ -2,10 +2,12 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:photo_gallery/photo_gallery.dart';
-import 'package:photo_taginator/database_provider.dart';
+import 'package:photo_taginator/models/tag.dart';
+import 'package:photo_taginator/models/tagged_image.dart';
+import 'package:photo_taginator/providers/database_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-class ImageCollection extends ChangeNotifier {
+class TaggedImageProvider extends ChangeNotifier {
   final List<TaggedImage> _images = [];
   late final Database database;
 
@@ -14,7 +16,7 @@ class ImageCollection extends ChangeNotifier {
   TaggedImage operator [](int index) => _images[index];
   void operator []=(int index, TaggedImage value) => _images[index] = value;
 
-  ImageCollection() {
+  TaggedImageProvider() {
     refresh();
   }
 
@@ -56,32 +58,4 @@ class ImageCollection extends ChangeNotifier {
     _images.removeAt(index);
     notifyListeners();
   }
-}
-
-class TaggedImage {
-  String id;
-  List<Tag> tags = [];
-
-  TaggedImage({required this.id, tags = const <Tag>[]}) {
-    this.tags.addAll(tags);
-  }
-
-  bool containsTagName(String name) {
-    return tags.any((tag) => tag.name == name);
-  }
-}
-
-class Tag {
-  int id;
-  String name;
-
-  Tag({required this.id, required this.name});
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Tag && runtimeType == other.runtimeType && id == other.id && name == other.name;
-
-  @override
-  int get hashCode => id.hashCode ^ name.hashCode;
 }

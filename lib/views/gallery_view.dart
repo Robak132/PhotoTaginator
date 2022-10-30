@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_gallery/photo_gallery.dart';
-import 'package:photo_taginator/models/image_collection.dart';
+import 'package:photo_taginator/providers/tagged_image_provider.dart';
 import 'package:photo_taginator/views/single_photo_view.dart';
 import 'package:provider/provider.dart';
 
@@ -62,45 +62,29 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
         ),
         body: RefreshIndicator(
             onRefresh: () async => refreshNotWait(),
-            child: false
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : SafeArea(
-                    child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      Expanded(
-                          child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                              ),
-                              child: Consumer<ImageCollection>(builder: (context, imageCollection, child) {
-                                return GridView.builder(
-                                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 3,
-                                      crossAxisSpacing: 5,
-                                      mainAxisSpacing: 5,
-                                    ),
-                                    itemBuilder: (context, index) {
-                                      return RawMaterialButton(
-                                          child: InkWell(
-                                              child: Ink.image(
-                                                  image: ThumbnailProvider(
-                                                      mediumId: imageCollection[index].id, highQuality: true),
-                                                  height: 300,
-                                                  fit: BoxFit.cover)),
-                                          onPressed: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) => SinglePhotoView(initialIndex: index)));
-                                          });
-                                    },
-                                    itemCount: imageCollection.length);
-                              })))
-                    ],
-                  ))));
+            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <Widget>[
+              Expanded(
+                  child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: const BoxDecoration(color: Colors.white),
+                      child: Consumer<TaggedImageProvider>(builder: (context, taggedImageProvider, child) {
+                        return GridView.builder(
+                            itemCount: taggedImageProvider.length,
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3, crossAxisSpacing: 5, mainAxisSpacing: 5),
+                            itemBuilder: (context, index) {
+                              return RawMaterialButton(
+                                  child: Ink.image(
+                                      image:
+                                          ThumbnailProvider(mediumId: taggedImageProvider[index].id, highQuality: true),
+                                      height: 300,
+                                      fit: BoxFit.cover),
+                                  onPressed: () {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) => SinglePhotoView(initialIndex: index)));
+                                  });
+                            });
+                      })))
+            ])));
   }
 }

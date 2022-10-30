@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:photo_taginator/models/tags_collection.dart';
+import 'package:photo_taginator/providers/tag_provider.dart';
 import 'package:provider/provider.dart';
 
 class SettingsView extends StatefulWidget {
@@ -29,19 +29,18 @@ class _MSettingViewState extends State<SettingsView> with AutomaticKeepAliveClie
             centerTitle: true,
             title: const Text('Tags'),
             iconTheme: const IconThemeData(color: Colors.black)),
-        body: Consumer<TagCollection>(builder: (context, tagCollection, child) {
+        body: Consumer<TagProvider>(builder: (context, tagProvider, child) {
           return RefreshIndicator(
-              onRefresh: tagCollection.refresh,
-              child: SafeArea(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <Widget>[
+              onRefresh: tagProvider.refresh,
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <Widget>[
                 Expanded(
                     child: ListView.builder(
-                        itemCount: tagCollection.length,
+                        itemCount: tagProvider.length,
                         itemBuilder: (BuildContext ctx, index) {
                           return Dismissible(
                               key: UniqueKey(),
                               direction: DismissDirection.endToStart,
-                              onDismissed: (dismissDirection) => tagCollection.removeAt(index),
+                              onDismissed: (dismissDirection) => tagProvider.removeAt(index),
                               background: Container(
                                   color: Colors.red,
                                   margin: const EdgeInsets.symmetric(horizontal: 15),
@@ -51,9 +50,9 @@ class _MSettingViewState extends State<SettingsView> with AutomaticKeepAliveClie
                                       child: const Icon(Icons.delete, color: Colors.white))),
                               child: Card(
                                   margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                                  child: ListTile(title: Text(tagCollection[index].name))));
+                                  child: ListTile(title: Text(tagProvider[index].name))));
                         }))
-              ])));
+              ]));
         }));
   }
 }

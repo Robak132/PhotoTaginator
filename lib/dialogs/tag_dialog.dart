@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:photo_taginator/models/image_collection.dart';
-import 'package:photo_taginator/models/tags_collection.dart';
+import 'package:photo_taginator/models/tag.dart';
+import 'package:photo_taginator/models/tagged_image.dart';
+import 'package:photo_taginator/providers/tag_provider.dart';
+import 'package:photo_taginator/providers/tagged_image_provider.dart';
 import 'package:provider/provider.dart';
 
 class TagDialog extends StatefulWidget {
@@ -18,7 +20,7 @@ class _TagDialogState extends State<TagDialog> {
     super.initState();
   }
 
-  void onSubmit(ImageCollection imageCollection, Map<Tag, bool> valueMap) {
+  void onSubmit(TaggedImageProvider taggedImageProvider, Map<Tag, bool> valueMap) {
     // final filteredMap = [
     //   for (MapEntry<Tag, bool> entry in valueMap.entries)
     //     if (!entry.value) {"IMAGE_ID": widget.image.id, "TAG_ID": entry.key.id}
@@ -39,8 +41,9 @@ class _TagDialogState extends State<TagDialog> {
                 centerTitle: true,
                 title: const Text('Manage Tags'),
                 iconTheme: const IconThemeData(color: Colors.black)),
-            body: Consumer2<TagCollection, ImageCollection>(builder: (context, tagCollection, imageCollection, child) {
-              final List<Tag> allTags = tagCollection.allTags;
+            body: Consumer2<TagProvider, TaggedImageProvider>(
+                builder: (context, tagProvider, taggedImageProvider, child) {
+              final List<Tag> allTags = tagProvider.allTags;
               final Map<Tag, bool> valuesMap = {for (Tag tag in allTags) tag: widget.image.tags.contains(tag)};
 
               return Column(children: [
@@ -53,7 +56,7 @@ class _TagDialogState extends State<TagDialog> {
                               value: valuesMap[allTags[index]],
                               onChanged: (value) => valuesMap[allTags[index]] = value!);
                         })),
-                ElevatedButton(onPressed: () => onSubmit(imageCollection, valuesMap), child: const Text('Submit'))
+                ElevatedButton(onPressed: () => onSubmit(taggedImageProvider, valuesMap), child: const Text('Submit'))
               ]);
             })));
   }
