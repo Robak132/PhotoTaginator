@@ -17,6 +17,19 @@ class TagProvider extends ChangeNotifier {
     refresh();
   }
 
+  static Future<TagProvider> initialise() async {
+    TagProvider tagProvider = TagProvider();
+    log("Loading tags from database...");
+    Database database = await DatabaseProvider().getDatabase();
+    List query = await database.query("TAGS", columns: ["ID", "NAME"]);
+    tagProvider._tags.clear();
+    for (Tag tag in query.map((entity) => Tag(id: entity["ID"], name: entity["NAME"]))) {
+      tagProvider._tags.add(tag);
+    }
+    log("Tags loaded");
+    return tagProvider;
+  }
+
   Future<void> refresh() async {
     log("Loading tags from database...");
     Database database = await DatabaseProvider().getDatabase();

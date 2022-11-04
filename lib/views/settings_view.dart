@@ -22,37 +22,39 @@ class _MSettingViewState extends State<SettingsView> with AutomaticKeepAliveClie
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-        appBar: AppBar(
-            elevation: 0,
-            foregroundColor: Colors.black,
-            backgroundColor: Colors.white,
-            centerTitle: true,
-            title: const Text('Tags'),
-            iconTheme: const IconThemeData(color: Colors.black)),
-        body: Consumer<TagProvider>(builder: (context, tagProvider, child) {
-          return RefreshIndicator(
-              onRefresh: tagProvider.refresh,
-              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <Widget>[
-                Expanded(
-                    child: ListView.builder(
-                        itemCount: tagProvider.length,
-                        itemBuilder: (BuildContext ctx, index) {
-                          return Dismissible(
-                              key: UniqueKey(),
-                              direction: DismissDirection.endToStart,
-                              onDismissed: (dismissDirection) => tagProvider.removeAt(index),
-                              background: Container(
-                                  color: Colors.red,
-                                  margin: const EdgeInsets.symmetric(horizontal: 15),
-                                  alignment: Alignment.centerRight,
-                                  child: Container(
-                                      margin: const EdgeInsets.symmetric(horizontal: 15),
-                                      child: const Icon(Icons.delete, color: Colors.white))),
-                              child: Card(
-                                  margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                                  child: ListTile(title: Text(tagProvider[index].name))));
-                        }))
-              ]));
-        }));
+      appBar: AppBar(
+          elevation: 0,
+          foregroundColor: Colors.black,
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          title: const Text('Tags'),
+          iconTheme: const IconThemeData(color: Colors.black)),
+      body: Consumer<TagProvider>(builder: (context, tagProvider, child) {
+        return RefreshIndicator(
+            onRefresh: tagProvider.refresh,
+            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <Widget>[
+              Expanded(
+                  child: ListView.builder(
+                      itemCount: tagProvider.length,
+                      itemBuilder: (BuildContext ctx, index) {
+                        return Dismissible(
+                            key: UniqueKey(),
+                            direction: DismissDirection.endToStart,
+                            onDismissed: (dismissDirection) => tagProvider.removeAt(index),
+                            background: Container(
+                                color: Colors.red,
+                                margin: const EdgeInsets.symmetric(horizontal: 15),
+                                alignment: Alignment.centerRight,
+                                child: Container(
+                                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                                    child: const Icon(Icons.delete, color: Colors.white))),
+                            child: Card(
+                                margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                                child: ListTile(title: Text(tagProvider[index].name))));
+                      }))
+            ]));
+      }),
+      floatingActionButton: const FloatingActionButton(onPressed: null, child: Icon(Icons.add)),
+    );
   }
 }

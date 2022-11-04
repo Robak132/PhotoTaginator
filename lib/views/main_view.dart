@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:photo_taginator/views/gallery_view.dart';
 import 'package:photo_taginator/views/settings_view.dart';
+import 'package:photo_taginator/views/tagged_gallery.dart';
 
 class MainView extends StatefulWidget {
   const MainView({Key? key}) : super(key: key);
@@ -17,7 +18,7 @@ class _MainViewState extends State<MainView> {
   @override
   void initState() {
     super.initState();
-    _views = [const SettingsView(), const GalleryView(), Container()];
+    _views = [const SettingsView(), const GalleryView(), const TaggedGalleryView()];
     _pageController = PageController(initialPage: _bottomNavBarIndex);
   }
 

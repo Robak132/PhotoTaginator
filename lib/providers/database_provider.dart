@@ -21,12 +21,6 @@ class DatabaseProvider {
 
   static FutureOr<void> createDatabase(Database database) {
     log("Creating database");
-    database.execute("DELETE FROM IMAGES");
-    database.execute("DELETE FROM TAGS");
-    database.execute("DELETE FROM CONNECTIONS");
-    database.execute("DROP TABLE IMAGES");
-    database.execute("DROP TABLE TAGS");
-    database.execute("DROP TABLE CONNECTIONS");
     database.execute('CREATE TABLE IF NOT EXISTS IMAGES (ID INTEGER NOT NULL PRIMARY KEY)');
     database.execute('CREATE TABLE IF NOT EXISTS TAGS ('
         'ID INTEGER NOT NULL PRIMARY KEY, '
@@ -45,6 +39,12 @@ class DatabaseProvider {
   static FutureOr<void> updateDatabase(Database database, int oldVersion, int newVersion) {
     log("Updating database...");
     if (oldVersion < newVersion) {
+      database.execute("DELETE FROM IMAGES");
+      database.execute("DELETE FROM TAGS");
+      database.execute("DELETE FROM CONNECTIONS");
+      database.execute("DROP TABLE IMAGES");
+      database.execute("DROP TABLE TAGS");
+      database.execute("DROP TABLE CONNECTIONS");
       createDatabase(database);
     }
   }

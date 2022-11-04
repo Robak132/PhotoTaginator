@@ -9,7 +9,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider<TagProvider>(create: (context) => TagProvider()),
+      FutureProvider<TagProvider>(create: (context) => TagProvider.initialise(), initialData: TagProvider()),
       ChangeNotifierProvider<TaggedImageProvider>(create: (context) => TaggedImageProvider()),
     ],
     child: const MyApp(),

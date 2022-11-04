@@ -11,10 +11,7 @@ class TaggedImageProvider extends ChangeNotifier {
   final List<TaggedImage> _images = [];
   late final Database database;
 
-  get length => _images.length;
-  get allImages => _images;
-  TaggedImage operator [](int index) => _images[index];
-  void operator []=(int index, TaggedImage value) => _images[index] = value;
+  get images => _images;
 
   TaggedImageProvider() {
     refresh();
