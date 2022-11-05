@@ -3,19 +3,16 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:photo_gallery/photo_gallery.dart';
 import 'package:photo_taginator/models/tagged_image.dart';
-import 'package:photo_taginator/providers/database_provider.dart';
-import 'package:sqflite/sqflite.dart';
 
 class TaggedImageProvider extends ChangeNotifier {
   final List<TaggedImage> images = [];
-  late final Database database;
 
   TaggedImageProvider() {
     refresh();
   }
 
   Future<void> refresh() async {
-    database = await DatabaseProvider.instance.getDatabase();
+    images.clear();
     log("Loading gallery...");
     List<Album> albums = await PhotoGallery.listAlbums(mediumType: MediumType.image);
     for (Album album in albums) {

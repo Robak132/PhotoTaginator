@@ -30,11 +30,12 @@ class _MSettingViewState extends State<SettingsView> with AutomaticKeepAliveClie
           },
         ),
       ),
+      floatingActionButton: const FloatingActionButton(onPressed: null, child: Icon(Icons.add)),
       body: Consumer<TagProvider>(builder: (context, tagProvider, child) {
         List<Tag> tags = tagProvider.tags;
 
         return RefreshIndicator(
-          onRefresh: tagProvider.refresh,
+          onRefresh: () async => await tagProvider.refresh(),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <Widget>[
             Expanded(
               child: ListView.builder(
@@ -45,13 +46,12 @@ class _MSettingViewState extends State<SettingsView> with AutomaticKeepAliveClie
                       direction: DismissDirection.endToStart,
                       onDismissed: (dismissDirection) => tagProvider.removeAt(index),
                       background: Container(
-                        color: Colors.red,
-                        margin: const EdgeInsets.symmetric(horizontal: 15),
-                        alignment: Alignment.centerRight,
-                        child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 15),
-                            child: const Icon(Icons.delete, color: Colors.white)),
-                      ),
+                          color: Colors.red,
+                          margin: const EdgeInsets.symmetric(horizontal: 15),
+                          alignment: Alignment.centerRight,
+                          child: Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 15),
+                              child: const Icon(Icons.delete, color: Colors.white))),
                       child: Card(
                           margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                           child: ListTile(title: Text(tags[index].name))),
@@ -61,7 +61,6 @@ class _MSettingViewState extends State<SettingsView> with AutomaticKeepAliveClie
           ]),
         );
       }),
-      floatingActionButton: const FloatingActionButton(onPressed: null, child: Icon(Icons.add)),
     );
   }
 }

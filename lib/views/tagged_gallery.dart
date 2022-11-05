@@ -1,8 +1,6 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_taginator/models/tag.dart';
 import 'package:photo_taginator/models/tagged_image.dart';
 import 'package:photo_taginator/providers/tag_provider.dart';
@@ -20,28 +18,6 @@ class _TaggedGalleryViewState extends State<TaggedGalleryView> with AutomaticKee
   @override
   bool get wantKeepAlive => true;
 
-  @override
-  void initState() {
-    super.initState();
-    refresh();
-  }
-
-  void refreshNotWait() {
-    refresh();
-  }
-
-  Future<void> refresh() async {
-    await _promptPermissionSetting();
-  }
-
-  Future<bool> _promptPermissionSetting() async {
-    if (Platform.isIOS && await Permission.storage.request().isGranted && await Permission.photos.request().isGranted ||
-        Platform.isAndroid && await Permission.storage.request().isGranted) {
-      return true;
-    }
-    return false;
-  }
-
   void search() {}
 
   @override
@@ -54,12 +30,12 @@ class _TaggedGalleryViewState extends State<TaggedGalleryView> with AutomaticKee
           centerTitle: true,
           title: const Text('Albums'),
           actions: <Widget>[IconButton(icon: const Icon(Icons.search), onPressed: search)]),
-      body: RefreshIndicator(
-        onRefresh: () async => refreshNotWait(),
-        child: Consumer<TagProvider>(builder: (context, tagProvider, child) {
-          List<Tag> tags = tagProvider.tags;
+      body: Consumer<TagProvider>(builder: (context, tagProvider, child) {
+        List<Tag> tags = tagProvider.tags;
 
-          return Padding(
+        return RefreshIndicator(
+          onRefresh: () async => tagProvider.refresh(),
+          child: Padding(
             padding: const EdgeInsets.only(top: 10),
             child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
               Expanded(
@@ -85,9 +61,9 @@ class _TaggedGalleryViewState extends State<TaggedGalleryView> with AutomaticKee
                     }),
               )
             ]),
-          );
-        }),
-      ),
+          ),
+        );
+      }),
     );
   }
 }

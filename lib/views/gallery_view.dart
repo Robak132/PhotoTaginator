@@ -30,15 +30,16 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
           backgroundColor: Colors.white,
           centerTitle: true,
           title: const Text('Gallery')),
-      body: RefreshIndicator(
-        onRefresh: () async => {},
-        child: Consumer<TaggedImageProvider>(builder: (context, taggedImageProvider, child) {
-          List<TaggedImage> images = taggedImageProvider.images;
-          return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <Widget>[
+      body: Consumer<TaggedImageProvider>(builder: (context, taggedImageProvider, child) {
+        List<TaggedImage> images = taggedImageProvider.images;
+
+        return RefreshIndicator(
+          onRefresh: () async => taggedImageProvider.refresh(),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <Widget>[
             Expanded(child: GalleryWidget(images: images)),
-          ]);
-        }),
-      ),
+          ]),
+        );
+      }),
     );
   }
 }

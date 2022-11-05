@@ -14,11 +14,12 @@ class TagProvider extends ChangeNotifier {
   }
 
   Future<void> refresh() async {
+    tags.clear();
     Database database = await DatabaseProvider().getDatabase();
     log("Loading tags from database...");
     List<Map<String, Object?>> query = await database.query("TAGS", columns: ["ID", "NAME"]);
     for (Tag tag in query.map((entity) => Tag(id: entity["ID"] as int, name: entity["NAME"] as String))) {
-      tag.fetchImages();
+      await tag.fetchImages();
       add(tag);
     }
     log("Tags loaded");
