@@ -37,39 +37,35 @@ class _TagDialogState extends State<TagDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: widget.image.fetchTags,
-      child: Dialog(
-        insetPadding: const EdgeInsets.only(top: 100, bottom: 100, left: 50, right: 50),
-        child: Scaffold(
-          appBar: AppBar(
-              automaticallyImplyLeading: false,
-              flexibleSpace: Container(),
-              foregroundColor: Colors.black,
-              backgroundColor: Colors.white,
-              centerTitle: true,
-              title: const Text('Manage Tags'),
-              iconTheme: const IconThemeData(color: Colors.black)),
-          body:
-              Consumer2<TagProvider, TaggedImageProvider>(builder: (context, tagProvider, taggedImageProvider, child) {
-            List<Tag> tags = tagProvider.tags;
-            Map<Tag, bool> valuesMap = {for (Tag tag in tags) tag: widget.image.tags.contains(tag)};
+    return Dialog(
+      insetPadding: const EdgeInsets.only(top: 100, bottom: 100, left: 50, right: 50),
+      child: Scaffold(
+        appBar: AppBar(
+            automaticallyImplyLeading: false,
+            flexibleSpace: Container(),
+            foregroundColor: Colors.black,
+            backgroundColor: Colors.white,
+            centerTitle: true,
+            title: const Text('Manage Tags'),
+            iconTheme: const IconThemeData(color: Colors.black)),
+        body: Consumer2<TagProvider, TaggedImageProvider>(builder: (context, tagProvider, taggedImageProvider, child) {
+          List<Tag> tags = tagProvider.tags;
+          Map<Tag, bool> valuesMap = {for (Tag tag in tags) tag: widget.image.tags.contains(tag)};
 
-            return Column(children: [
-              Expanded(
-                child: ListView.builder(
-                    itemCount: tags.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return CheckboxListTile(
-                          title: Text(tags[index].name),
-                          value: valuesMap[tags[index]],
-                          onChanged: (value) async => await onChanged(valuesMap, tags[index], value!));
-                    }),
-              ),
-              ElevatedButton(onPressed: () => onSubmit(context), child: const Text('Done'))
-            ]);
-          }),
-        ),
+          return Column(children: [
+            Expanded(
+              child: ListView.builder(
+                  itemCount: tags.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return CheckboxListTile(
+                        title: Text(tags[index].name),
+                        value: valuesMap[tags[index]],
+                        onChanged: (value) async => await onChanged(valuesMap, tags[index], value!));
+                  }),
+            ),
+            ElevatedButton(onPressed: () => onSubmit(context), child: const Text('Done'))
+          ]);
+        }),
       ),
     );
   }
