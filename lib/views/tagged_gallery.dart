@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -71,13 +72,15 @@ class _TaggedGalleryViewState extends State<TaggedGalleryView> with AutomaticKee
                       return Column(children: <Widget>[
                         Container(
                           padding: const EdgeInsets.symmetric(vertical: 0),
-                          child: Center(
-                            child: Text(tags[index].name, style: Theme.of(context).textTheme.labelLarge),
-                          ),
+                          child: Center(child: Text(tags[index].name, style: Theme.of(context).textTheme.labelLarge)),
                         ),
                         GalleryWidget(
                             images: tag.images,
-                            onImageError: (String imageID) => tagProvider.removeImage(tag, TaggedImage(id: imageID)))
+                            onImageError: (String imageID) {
+                              TaggedImage image = TaggedImage(id: imageID);
+                              log("Removing $image from database due to errors");
+                              tagProvider.removeImage(tag, image);
+                            })
                       ]);
                     }),
               )

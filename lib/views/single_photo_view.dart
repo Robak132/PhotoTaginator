@@ -21,12 +21,6 @@ class SinglePhotoView extends StatefulWidget {
 class _SinglePhotoViewState extends State<SinglePhotoView> {
   late int currentIndex = widget.initialIndex;
 
-  Future<void> onPageChanged(int index) async {
-    setState(() {
-      currentIndex = index;
-    });
-  }
-
   void onTap(int index, TaggedImage image) {
     switch (index) {
       case 0:
@@ -51,32 +45,36 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
             BottomNavigationBarItem(icon: Icon(Icons.delete), label: 'Remove'),
             BottomNavigationBarItem(icon: Icon(Icons.tag), label: 'Tag')
           ]),
-      body: Container(
-        constraints: BoxConstraints.expand(height: MediaQuery.of(context).size.height),
-        child: Stack(
-          alignment: Alignment.center,
-          children: <Widget>[
-            PhotoViewGallery.builder(
-              scrollPhysics: const AlwaysScrollableScrollPhysics(),
-              itemCount: widget.images.length,
-              pageController: widget.pageController,
-              gaplessPlayback: true,
-              onPageChanged: (index) => onPageChanged(index),
-              scrollDirection: Axis.horizontal,
-              builder: (context, index) => PhotoViewGalleryPageOptions(
-                  imageProvider: PhotoProvider(mediumId: widget.images[index].id),
-                  initialScale: PhotoViewComputedScale.contained,
-                  minScale: PhotoViewComputedScale.contained,
-                  maxScale: PhotoViewComputedScale.covered * 1.8),
-            ),
-            Container(
-                padding: const EdgeInsets.all(40.0),
-                alignment: Alignment.topCenter,
-                child: Text("Image ${widget.images[currentIndex].id}",
-                    textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 17.0)))
-          ],
-        ),
-      ),
+      body: FutureBuilder(
+          future: widget.images[currentIndex].fetchTags(),
+          builder: (context, snapshot) {
+            return Container(
+              constraints: BoxConstraints.expand(height: MediaQuery.of(context).size.height),
+              child: Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  PhotoViewGallery.builder(
+                    scrollPhysics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: widget.images.length,
+                    pageController: widget.pageController,
+                    gaplessPlayback: true,
+                    onPageChanged: (index) => setState(() => currentIndex = index),
+                    scrollDirection: Axis.horizontal,
+                    builder: (context, index) => PhotoViewGalleryPageOptions(
+                        imageProvider: PhotoProvider(mediumId: widget.images[index].id),
+                        initialScale: PhotoViewComputedScale.contained,
+                        minScale: PhotoViewComputedScale.contained,
+                        maxScale: PhotoViewComputedScale.covered * 1.8),
+                  ),
+                  Container(
+                      padding: const EdgeInsets.all(40.0),
+                      alignment: Alignment.topCenter,
+                      child: Text("Image ${widget.images[currentIndex].id}",
+                          textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 17.0)))
+                ],
+              ),
+            );
+          }),
     );
   }
 }

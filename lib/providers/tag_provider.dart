@@ -34,15 +34,20 @@ class TagProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addImage(Tag tag, TaggedImage image) {
+  Future<void> addImage(Tag tag, TaggedImage image) async {
+    Database database = await DatabaseProvider().getDatabase();
     int index = tags.indexOf(tag);
     tags[index].images.add(image);
+    database.insert("CONNECTIONS", {"IMAGE_ID": image.id, "TAG_ID": tag.id},
+        conflictAlgorithm: ConflictAlgorithm.ignore);
     notifyListeners();
   }
 
-  void removeImage(Tag tag, TaggedImage image) {
+  Future<void> removeImage(Tag tag, TaggedImage image) async {
+    Database database = await DatabaseProvider().getDatabase();
     int index = tags.indexOf(tag);
     tags[index].images.remove(image);
+    database.delete("CONNECTIONS", where: "IMAGE_ID = ? AND TAG_ID = ?", whereArgs: [image.id, tag.id]);
     notifyListeners();
   }
 }

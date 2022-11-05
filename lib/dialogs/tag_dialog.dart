@@ -18,57 +18,58 @@ class _TagDialogState extends State<TagDialog> {
   @override
   void initState() {
     super.initState();
-    widget.image.fetchTags();
   }
 
-  Future<void> onSubmit(BuildContext context) async {
-    await Provider.of<TaggedImageProvider>(context, listen: false).update(widget.image);
-    if (!mounted) return;
+  void onSubmit(BuildContext context) {
     Navigator.of(context).pop();
   }
 
   Future<void> onChanged(Map<Tag, bool> valuesMap, Tag tag, bool newValue) async {
     if (newValue) {
       widget.image.addTag(tag);
-      Provider.of<TagProvider>(context, listen: false).addImage(tag, widget.image);
+      await Provider.of<TagProvider>(context, listen: false).addImage(tag, widget.image);
     } else {
       widget.image.removeTag(tag);
-      Provider.of<TagProvider>(context, listen: false).removeImage(tag, widget.image);
+      await Provider.of<TagProvider>(context, listen: false).removeImage(tag, widget.image);
     }
     valuesMap[tag] = newValue;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      insetPadding: const EdgeInsets.only(top: 100, bottom: 100, left: 50, right: 50),
-      child: Scaffold(
-        appBar: AppBar(
-            automaticallyImplyLeading: false,
-            flexibleSpace: Container(),
-            foregroundColor: Colors.black,
-            backgroundColor: Colors.white,
-            centerTitle: true,
-            title: const Text('Manage Tags'),
-            iconTheme: const IconThemeData(color: Colors.black)),
-        body: Consumer2<TagProvider, TaggedImageProvider>(builder: (context, tagProvider, taggedImageProvider, child) {
-          List<Tag> tags = tagProvider.tags;
-          Map<Tag, bool> valuesMap = {for (Tag tag in tags) tag: widget.image.tags.contains(tag)};
+    return RefreshIndicator(
+      onRefresh: widget.image.fetchTags,
+      child: Dialog(
+        insetPadding: const EdgeInsets.only(top: 100, bottom: 100, left: 50, right: 50),
+        child: Scaffold(
+          appBar: AppBar(
+              automaticallyImplyLeading: false,
+              flexibleSpace: Container(),
+              foregroundColor: Colors.black,
+              backgroundColor: Colors.white,
+              centerTitle: true,
+              title: const Text('Manage Tags'),
+              iconTheme: const IconThemeData(color: Colors.black)),
+          body:
+              Consumer2<TagProvider, TaggedImageProvider>(builder: (context, tagProvider, taggedImageProvider, child) {
+            List<Tag> tags = tagProvider.tags;
+            Map<Tag, bool> valuesMap = {for (Tag tag in tags) tag: widget.image.tags.contains(tag)};
 
-          return Column(children: [
-            Expanded(
-              child: ListView.builder(
-                  itemCount: tags.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return CheckboxListTile(
-                        title: Text(tags[index].name),
-                        value: valuesMap[tags[index]],
-                        onChanged: (value) async => await onChanged(valuesMap, tags[index], value!));
-                  }),
-            ),
-            ElevatedButton(onPressed: () async => onSubmit(context), child: const Text('Done'))
-          ]);
-        }),
+            return Column(children: [
+              Expanded(
+                child: ListView.builder(
+                    itemCount: tags.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return CheckboxListTile(
+                          title: Text(tags[index].name),
+                          value: valuesMap[tags[index]],
+                          onChanged: (value) async => await onChanged(valuesMap, tags[index], value!));
+                    }),
+              ),
+              ElevatedButton(onPressed: () => onSubmit(context), child: const Text('Done'))
+            ]);
+          }),
+        ),
       ),
     );
   }
