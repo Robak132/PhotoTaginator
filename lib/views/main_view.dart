@@ -18,9 +18,12 @@ class _MainViewState extends State<MainView> {
   @override
   void initState() {
     super.initState();
+    loadImages();
     _views = [const SettingsView(), const GalleryView(), const TaggedGalleryView()];
     _pageController = PageController(initialPage: _bottomNavBarIndex);
   }
+
+  void loadImages() {}
 
   @override
   void dispose() {

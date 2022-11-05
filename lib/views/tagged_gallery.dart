@@ -5,7 +5,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_taginator/models/tag.dart';
 import 'package:photo_taginator/models/tagged_image.dart';
 import 'package:photo_taginator/providers/tag_provider.dart';
-import 'package:photo_taginator/providers/tagged_image_provider.dart';
 import 'package:photo_taginator/widgets/gallery_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -42,36 +41,48 @@ class _TaggedGalleryViewState extends State<TaggedGalleryView> with AutomaticKee
     return false;
   }
 
+  void search() {}
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
       appBar: AppBar(
-          foregroundColor: Colors.black, backgroundColor: Colors.white, centerTitle: true, title: const Text('Albums')),
+          foregroundColor: Colors.black,
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          title: const Text('Albums'),
+          actions: <Widget>[IconButton(icon: const Icon(Icons.search), onPressed: search)]),
       body: RefreshIndicator(
         onRefresh: () async => refreshNotWait(),
-        child: Consumer2<TagProvider, TaggedImageProvider>(builder: (context, tagProvider, taggedImageProvider, child) {
-          List<TaggedImage> images = taggedImageProvider.images;
-          List<Tag> tags = tagProvider.allTags;
+        child: Consumer<TagProvider>(builder: (context, tagProvider, child) {
+          List<Tag> tags = tagProvider.tags;
 
-          return Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-            Expanded(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: tags.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-                      Container(
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        child: Center(
-                          child: Text(tags[index].name, style: Theme.of(context).textTheme.labelLarge),
+          return Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+              Expanded(
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: tags.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      Tag tag = tags[index];
+
+                      return Column(children: <Widget>[
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 0),
+                          child: Center(
+                            child: Text(tags[index].name, style: Theme.of(context).textTheme.labelLarge),
+                          ),
                         ),
-                      ),
-                      GalleryWidget(images: images.sublist(9 * index, 9 * (index + 1)))
-                    ]);
-                  }),
-            )
-          ]);
+                        GalleryWidget(
+                            images: tag.images,
+                            onImageError: (String imageID) => tagProvider.removeImage(tag, TaggedImage(id: imageID)))
+                      ]);
+                    }),
+              )
+            ]),
+          );
         }),
       ),
     );

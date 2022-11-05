@@ -9,8 +9,8 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MultiProvider(
     providers: [
-      FutureProvider<TagProvider>(create: (context) => TagProvider.initialise(), initialData: TagProvider()),
-      ChangeNotifierProvider<TaggedImageProvider>(create: (context) => TaggedImageProvider()),
+      ChangeNotifierProvider<TagProvider>(create: (context) => TagProvider(), lazy: false),
+      ChangeNotifierProvider<TaggedImageProvider>(create: (context) => TaggedImageProvider())
     ],
     child: const MyApp(),
   ));
@@ -23,9 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Photo Taginator',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       debugShowCheckedModeBanner: false,
       home: const MainView(),
     );

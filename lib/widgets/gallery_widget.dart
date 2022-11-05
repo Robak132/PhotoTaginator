@@ -1,20 +1,20 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:photo_gallery/photo_gallery.dart';
 import 'package:photo_taginator/models/tagged_image.dart';
 import 'package:photo_taginator/views/single_photo_view.dart';
 
 class GalleryWidget extends StatelessWidget {
-  const GalleryWidget({
-    Key? key,
-    required this.images,
-  }) : super(key: key);
+  const GalleryWidget({Key? key, required this.images, this.onImageError}) : super(key: key);
 
   final List<TaggedImage> images;
+  final Function(String imageID)? onImageError;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.all(10),
       child: GridView.builder(
         itemCount: images.length,
         physics: const ClampingScrollPhysics(),
@@ -25,10 +25,17 @@ class GalleryWidget extends StatelessWidget {
           return RawMaterialButton(
               child: Ink.image(
                   image: ThumbnailProvider(mediumId: images[index].id, highQuality: true),
+                  onImageError: (exception, stackTrace) {
+                    log(exception.toString());
+                    if (onImageError != null) {
+                      onImageError!(images[index].id);
+                    }
+                  },
                   height: 300,
                   fit: BoxFit.cover),
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => SinglePhotoView(initialIndex: index)));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SinglePhotoView(images: images, initialIndex: index)));
               });
         },
       ),
