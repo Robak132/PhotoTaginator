@@ -4,11 +4,13 @@ import 'package:photo_taginator/models/tag.dart';
 import 'package:photo_taginator/providers/database_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-class TaggedImage {
+class TaggedImage implements Comparable<TaggedImage> {
   String id;
+  String? title;
+
   List<Tag> tags = [];
 
-  TaggedImage({required this.id, tags = const <Tag>[]}) {
+  TaggedImage(this.id, {this.title, tags = const <Tag>[]}) {
     this.tags.addAll(tags);
   }
 
@@ -29,6 +31,11 @@ class TaggedImage {
         .rawQuery("SELECT T.ID, T.NAME FROM CONNECTIONS C JOIN TAGS T ON (T.ID = C.TAG_ID) WHERE IMAGE_ID = ?", [id]);
     tags = [for (Map<String, Object?> map in query) Tag(id: map["ID"] as int, name: map["NAME"] as String)];
     log("Tags fetched for: $this");
+  }
+
+  @override
+  int compareTo(TaggedImage other) {
+    return int.parse(id) - int.parse(other.id);
   }
 
   @override

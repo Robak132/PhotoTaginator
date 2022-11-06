@@ -5,9 +5,10 @@ import 'package:photo_taginator/models/tag.dart';
 import 'package:photo_taginator/models/tagged_image.dart';
 import 'package:photo_taginator/providers/database_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:unique_list/unique_list.dart';
 
 class TagProvider extends ChangeNotifier {
-  final List<Tag> tags = [];
+  final UniqueList<Tag> tags = UniqueList();
 
   TagProvider() {
     refresh();

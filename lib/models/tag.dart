@@ -17,7 +17,7 @@ class Tag {
     Database database = await DatabaseProvider().getDatabase();
     List<Map<String, Object?>> query =
         await database.query("CONNECTIONS", columns: ["IMAGE_ID"], where: "TAG_ID = ?", whereArgs: [id]);
-    images = [for (Map<String, Object?> map in query) TaggedImage(id: map["IMAGE_ID"] as String)];
+    images = [for (Map<String, Object?> map in query) TaggedImage(map["IMAGE_ID"] as String)];
     log("Images fetched for: $this");
   }
 

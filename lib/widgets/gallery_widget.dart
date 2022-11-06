@@ -13,6 +13,7 @@ class GalleryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    images.sort((b, a) => a.compareTo(b));
     return Container(
       padding: const EdgeInsets.all(10),
       child: GridView.builder(

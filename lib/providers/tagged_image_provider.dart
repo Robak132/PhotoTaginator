@@ -3,9 +3,10 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:photo_gallery/photo_gallery.dart';
 import 'package:photo_taginator/models/tagged_image.dart';
+import 'package:unique_list/unique_list.dart';
 
 class TaggedImageProvider extends ChangeNotifier {
-  final List<TaggedImage> images = [];
+  final UniqueList<TaggedImage> images = UniqueList();
 
   TaggedImageProvider() {
     refresh();
@@ -18,7 +19,7 @@ class TaggedImageProvider extends ChangeNotifier {
     for (Album album in albums) {
       final List<Medium> mediums = (await album.listMedia()).items;
       for (Medium media in mediums) {
-        add(TaggedImage(id: media.id));
+        add(TaggedImage(media.id, title: media.title));
       }
     }
     log("Gallery loaded");

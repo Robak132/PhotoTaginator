@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:photo_gallery/photo_gallery.dart';
-import 'package:photo_taginator/dialogs/tag_dialog.dart';
 import 'package:photo_taginator/models/tagged_image.dart';
+import 'package:photo_taginator/views/settings_view.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
@@ -26,7 +26,8 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
       case 0:
       case 1:
       case 2:
-        showDialog(context: context, builder: (context) => TagDialog(image: image));
+        // showDialog(context: context, builder: (context) => TagDialog(image: image));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsView()));
     }
   }
 
@@ -69,7 +70,7 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
                   Container(
                       padding: const EdgeInsets.all(40.0),
                       alignment: Alignment.topCenter,
-                      child: Text("Image ${widget.images[currentIndex].id}",
+                      child: Text(widget.images[currentIndex].title ?? "Image",
                           textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 17.0)))
                 ],
               ),
