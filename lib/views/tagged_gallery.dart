@@ -37,30 +37,36 @@ class _TaggedGalleryViewState extends State<TaggedGalleryView> with AutomaticKee
           onRefresh: () async => tagProvider.refresh(),
           child: Padding(
             padding: const EdgeInsets.only(top: 10),
-            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              Expanded(
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: tags.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      Tag tag = tags[index];
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Expanded(
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: tags.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        Tag tag = tags[index];
 
-                      return Column(children: <Widget>[
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 0),
-                          child: Center(child: Text(tags[index].name, style: Theme.of(context).textTheme.labelLarge)),
-                        ),
-                        GalleryWidget(
-                            images: tag.images,
-                            onImageError: (String imageID) {
-                              TaggedImage image = TaggedImage(imageID);
-                              log("Removing $image from database due to errors");
-                              tagProvider.removeImage(tag, image);
-                            })
-                      ]);
-                    }),
-              )
-            ]),
+                        return Column(
+                          children: <Widget>[
+                            Container(
+                              padding: const EdgeInsets.symmetric(vertical: 0),
+                              child:
+                                  Center(child: Text(tags[index].name, style: Theme.of(context).textTheme.labelLarge)),
+                            ),
+                            GalleryWidget(
+                                images: tag.images,
+                                onImageError: (String imageID) {
+                                  TaggedImage image = TaggedImage(imageID);
+                                  log("Removing $image from database due to errors");
+                                  tagProvider.removeImage(tag, image);
+                                })
+                          ],
+                        );
+                      }),
+                )
+              ],
+            ),
           ),
         );
       }),

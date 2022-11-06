@@ -44,17 +44,18 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
           centerTitle: true,
           title: const Text('Gallery')),
       bottomNavigationBar: BottomNavigationBar(
-          onTap: (index) => onTap(index, widget.images[currentIndex]),
-          backgroundColor: Colors.white,
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.black,
-          showUnselectedLabels: false,
-          showSelectedLabels: false,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.share), label: 'Share'),
-            BottomNavigationBarItem(icon: Icon(Icons.delete), label: 'Remove'),
-            BottomNavigationBarItem(icon: Icon(Icons.tag), label: 'Tag')
-          ]),
+        onTap: (index) => onTap(index, widget.images[currentIndex]),
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black,
+        showUnselectedLabels: false,
+        showSelectedLabels: false,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.share), label: 'Share'),
+          BottomNavigationBarItem(icon: Icon(Icons.delete), label: 'Remove'),
+          BottomNavigationBarItem(icon: Icon(Icons.tag), label: 'Tag')
+        ],
+      ),
       body: FutureBuilder(
           future: widget.images[currentIndex].fetchTags(),
           builder: (context, snapshot) {

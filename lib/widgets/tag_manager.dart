@@ -48,6 +48,13 @@ class _TagManagerState extends State<TagManager> {
     }
   }
 
+  Future<void> onRemoved(BuildContext context, TagProvider tagProvider, Tag tag) async {
+    bool? status = await createRemoveDialog(context, "Delete tag?", "Do you want to remove \"${tag.name}\" tag?");
+    if (status != null && status) {
+      await tagProvider.remove(tag);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer2<TagProvider, TaggedImageProvider>(builder: (context, tagProvider, taggedImageProvider, child) {
@@ -68,15 +75,21 @@ class _TagManagerState extends State<TagManager> {
             ListView.builder(
                 itemCount: tags.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return CheckboxListTile(
-                      title: Text(tags[index].name),
-                      value: valuesMap[tags[index]],
-                      onChanged: (value) => onChanged(tagProvider, valuesMap, tags[index], value!));
+                  return GestureDetector(
+                    onLongPress: () => onRemoved(context, tagProvider, tags[index]),
+                    child: CheckboxListTile(
+                        title: Text(tags[index].name),
+                        value: valuesMap[tags[index]],
+                        onChanged: (value) => onChanged(tagProvider, valuesMap, tags[index], value!)),
+                  );
                 }),
             Positioned(
               bottom: 28,
               right: 8,
-              child: FloatingActionButton(child: const Icon(Icons.add), onPressed: () => onAdded(context, tagProvider)),
+              child: FloatingActionButton(
+                child: const Icon(Icons.add),
+                onPressed: () => onAdded(context, tagProvider),
+              ),
             ),
           ]),
         ),

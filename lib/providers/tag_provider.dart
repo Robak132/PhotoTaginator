@@ -35,8 +35,10 @@ class TagProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeAt(int index) {
-    tags.removeAt(index);
+  Future<void> remove(Tag tag) async {
+    Database database = await DatabaseProvider().getDatabase();
+    tags.remove(tag);
+    await database.delete("TAGS", where: "ID = ? AND NAME = ?", whereArgs: [tag.id, tag.name]);
     notifyListeners();
   }
 
@@ -44,7 +46,7 @@ class TagProvider extends ChangeNotifier {
     Database database = await DatabaseProvider().getDatabase();
     int index = tags.indexOf(tag);
     tags[index].images.add(image);
-    database.insert("CONNECTIONS", {"IMAGE_ID": image.id, "TAG_ID": tag.id},
+    await database.insert("CONNECTIONS", {"IMAGE_ID": image.id, "TAG_ID": tag.id},
         conflictAlgorithm: ConflictAlgorithm.ignore);
     notifyListeners();
   }
@@ -53,7 +55,7 @@ class TagProvider extends ChangeNotifier {
     Database database = await DatabaseProvider().getDatabase();
     int index = tags.indexOf(tag);
     tags[index].images.remove(image);
-    database.delete("CONNECTIONS", where: "IMAGE_ID = ? AND TAG_ID = ?", whereArgs: [image.id, tag.id]);
+    await database.delete("CONNECTIONS", where: "IMAGE_ID = ? AND TAG_ID = ?", whereArgs: [image.id, tag.id]);
     notifyListeners();
   }
 }
