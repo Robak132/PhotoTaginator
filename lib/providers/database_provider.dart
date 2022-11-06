@@ -23,15 +23,15 @@ class DatabaseProvider {
     log("Creating database");
     database.execute('CREATE TABLE IF NOT EXISTS IMAGES (ID TEXT NOT NULL PRIMARY KEY)');
     database.execute('CREATE TABLE IF NOT EXISTS TAGS ('
-        'ID INTEGER NOT NULL PRIMARY KEY, '
+        'ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, '
         'NAME TEXT NOT NULL UNIQUE)');
     database.execute('CREATE TABLE IF NOT EXISTS CONNECTIONS ('
         'IMAGE_ID TEXT NOT NULL constraint CONNECTIONS_TAGS_fk references TAGS, '
         'TAG_ID INTEGER NOT NULL constraint CONNECTIONS_IMAGES_fk references IMAGES,'
         'CONSTRAINT CONNECTIONS_PK PRIMARY KEY (IMAGE_ID, TAG_ID))');
-    database.insert('TAGS', {"ID": 1, "NAME": "Asterix"});
-    database.insert('TAGS', {"ID": 2, "NAME": "Obelix"});
-    database.insert('TAGS', {"ID": 3, "NAME": "Nowy"});
+    database.insert('TAGS', {"NAME": "Asterix"});
+    database.insert('TAGS', {"NAME": "Obelix"});
+    database.insert('TAGS', {"NAME": "Nowy"});
     log("Database created");
   }
 
@@ -51,7 +51,7 @@ class DatabaseProvider {
   static Future<Database> _connect() async {
     Database database = await databaseFactory.openDatabase("database.sqlite",
         options: OpenDatabaseOptions(
-            version: 10,
+            version: 11,
             onCreate: (Database database, int version) => createDatabase(database),
             onOpen: (Database database) => log("Opening database"),
             onUpgrade: (Database database, int oldVersion, int newVersion) =>

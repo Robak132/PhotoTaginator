@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:photo_taginator/utils/animatedDrawer.dart';
 import 'package:photo_taginator/views/gallery_view.dart';
+import 'package:photo_taginator/views/settings_view.dart';
 import 'package:photo_taginator/views/tagged_gallery.dart';
 
 class MainView extends StatefulWidget {
@@ -18,14 +18,14 @@ class _MainViewState extends State<MainView> {
   @override
   void initState() {
     super.initState();
-    _views = [const LoginScreen(), const GalleryView(), const TaggedGalleryView()];
+    _views = [const SettingsView(), const GalleryView(), const TaggedGalleryView()];
     _pageController = PageController(initialPage: 1);
   }
 
   @override
   void dispose() {
-    _pageController!.dispose();
     super.dispose();
+    _pageController!.dispose();
   }
 
   @override

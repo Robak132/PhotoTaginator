@@ -31,7 +31,7 @@ class _TaggedGalleryViewState extends State<TaggedGalleryView> with AutomaticKee
           title: const Text('Albums'),
           actions: <Widget>[IconButton(icon: const Icon(Icons.search), onPressed: search)]),
       body: Consumer<TagProvider>(builder: (context, tagProvider, child) {
-        List<Tag> tags = tagProvider.tags;
+        List<Tag> tags = tagProvider.notEmptyTags;
 
         return RefreshIndicator(
           onRefresh: () async => tagProvider.refresh(),

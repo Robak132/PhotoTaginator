@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:photo_gallery/photo_gallery.dart';
 import 'package:photo_taginator/models/tagged_image.dart';
-import 'package:photo_taginator/views/settings_view.dart';
+import 'package:photo_taginator/widgets/tag_manager.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
@@ -20,20 +20,29 @@ class SinglePhotoView extends StatefulWidget {
 
 class _SinglePhotoViewState extends State<SinglePhotoView> {
   late int currentIndex = widget.initialIndex;
+  bool showBottomMenu = false;
 
   void onTap(int index, TaggedImage image) {
     switch (index) {
       case 0:
       case 1:
       case 2:
-        // showDialog(context: context, builder: (context) => TagDialog(image: image));
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsView()));
+        setState(() {
+          showBottomMenu = !showBottomMenu;
+        });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
     return Scaffold(
+      appBar: AppBar(
+          automaticallyImplyLeading: false,
+          foregroundColor: Colors.black,
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          title: const Text('Gallery')),
       bottomNavigationBar: BottomNavigationBar(
           onTap: (index) => onTap(index, widget.images[currentIndex]),
           backgroundColor: Colors.white,
@@ -68,10 +77,17 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
                         maxScale: PhotoViewComputedScale.covered * 1.8),
                   ),
                   Container(
-                      padding: const EdgeInsets.all(40.0),
-                      alignment: Alignment.topCenter,
-                      child: Text(widget.images[currentIndex].title ?? "Image",
-                          textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 17.0)))
+                    padding: const EdgeInsets.all(40.0),
+                    alignment: Alignment.topCenter,
+                    child: Text(widget.images[currentIndex].title ?? "Image",
+                        textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 17.0)),
+                  ),
+                  AnimatedPositioned(
+                      curve: Curves.linear,
+                      duration: const Duration(milliseconds: 300),
+                      top: showBottomMenu ? 0 : height,
+                      bottom: -20,
+                      child: TagManager(widget.images[currentIndex]))
                 ],
               ),
             );

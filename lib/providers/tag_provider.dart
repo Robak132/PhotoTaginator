@@ -9,6 +9,7 @@ import 'package:unique_list/unique_list.dart';
 
 class TagProvider extends ChangeNotifier {
   final UniqueList<Tag> tags = UniqueList();
+  get notEmptyTags => tags.where((Tag tag) => tag.images.isNotEmpty).toUniqueList();
 
   TagProvider() {
     refresh();
@@ -21,13 +22,16 @@ class TagProvider extends ChangeNotifier {
     List<Map<String, Object?>> query = await database.query("TAGS", columns: ["ID", "NAME"]);
     for (Tag tag in query.map((entity) => Tag(id: entity["ID"] as int, name: entity["NAME"] as String))) {
       await tag.fetchImages();
-      add(tag);
+      tags.add(tag);
+      notifyListeners();
     }
     log("Tags loaded");
   }
 
-  void add(Tag tag) {
-    tags.add(tag);
+  Future<void> add(String tagName) async {
+    Database database = await DatabaseProvider().getDatabase();
+    int id = await database.insert("TAGS", {"NAME": tagName});
+    tags.add(Tag(id: id, name: tagName));
     notifyListeners();
   }
 
