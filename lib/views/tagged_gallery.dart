@@ -18,18 +18,16 @@ class _TaggedGalleryViewState extends State<TaggedGalleryView> with AutomaticKee
   @override
   bool get wantKeepAlive => true;
 
-  void search() {}
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
       appBar: AppBar(
-          foregroundColor: Colors.black,
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          title: const Text('Albums'),
-          actions: <Widget>[IconButton(icon: const Icon(Icons.search), onPressed: search)]),
+        foregroundColor: Colors.black,
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        title: const Text('Albums'),
+      ),
       body: Consumer<TagProvider>(builder: (context, tagProvider, child) {
         List<Tag> tags = tagProvider.notEmptyTags;
 
@@ -51,8 +49,9 @@ class _TaggedGalleryViewState extends State<TaggedGalleryView> with AutomaticKee
                           children: <Widget>[
                             Container(
                               padding: const EdgeInsets.symmetric(vertical: 0),
-                              child:
-                                  Center(child: Text(tags[index].name, style: Theme.of(context).textTheme.labelLarge)),
+                              child: Center(
+                                child: Text(tags[index].name, style: Theme.of(context).textTheme.labelLarge),
+                              ),
                             ),
                             GalleryWidget(
                                 images: tag.images,

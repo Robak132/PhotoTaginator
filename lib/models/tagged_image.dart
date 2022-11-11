@@ -1,18 +1,20 @@
 import 'dart:developer';
 
+import 'package:photo_gallery/photo_gallery.dart';
 import 'package:photo_taginator/models/tag.dart';
 import 'package:photo_taginator/providers/database_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class TaggedImage implements Comparable<TaggedImage> {
   String id;
-  String? title;
 
   List<Tag> tags = [];
 
-  TaggedImage(this.id, {this.title, tags = const <Tag>[]}) {
+  TaggedImage(this.id, {tags = const <Tag>[]}) {
     this.tags.addAll(tags);
   }
+
+  Future<String?> getFilename() async => (await PhotoGallery.getMedium(mediumId: id)).filename;
 
   void addTag(Tag tag) {
     if (!tags.contains(tag)) {

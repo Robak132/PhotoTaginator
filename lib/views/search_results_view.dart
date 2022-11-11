@@ -15,8 +15,6 @@ class _SearchGalleryViewState extends State<SearchResultsView> {
   @override
   void initState() {
     super.initState();
-    Provider.of<SearchImageProvider>(context, listen: false).refreshAsync();
-    Provider.of<SearchImageProvider>(context, listen: false).refreshAsync();
   }
 
   @override
@@ -39,7 +37,7 @@ class _SearchGalleryViewState extends State<SearchResultsView> {
         List<TaggedImage> images = searchImageProvider.images;
 
         return RefreshIndicator(
-          onRefresh: () async => searchImageProvider.refreshAsync(),
+          onRefresh: () async => searchImageProvider.refresh(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[Expanded(child: GalleryWidget(images: images))],

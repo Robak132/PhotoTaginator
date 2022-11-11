@@ -29,9 +29,6 @@ class DatabaseProvider {
         'IMAGE_ID TEXT NOT NULL constraint CONNECTIONS_TAGS_fk references TAGS, '
         'TAG_ID INTEGER NOT NULL constraint CONNECTIONS_IMAGES_fk references IMAGES,'
         'CONSTRAINT CONNECTIONS_PK PRIMARY KEY (IMAGE_ID, TAG_ID))');
-    database.insert('TAGS', {"NAME": "Asterix"});
-    database.insert('TAGS', {"NAME": "Obelix"});
-    database.insert('TAGS', {"NAME": "Nowy"});
     log("Database created");
   }
 

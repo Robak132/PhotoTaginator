@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_gallery/photo_gallery.dart';
@@ -49,6 +50,28 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    BackButtonInterceptor.add(backButtonAction);
+  }
+
+  @override
+  void dispose() {
+    BackButtonInterceptor.remove(backButtonAction);
+    super.dispose();
+  }
+
+  bool backButtonAction(bool stopDefaultButtonEvent, RouteInfo info) {
+    if (showBottomMenu) {
+      setState(() {
+        showBottomMenu = false;
+      });
+      return true;
+    }
+    return false;
+  }
+
+  @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -80,11 +103,16 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
                 SizedBox(
                   height: 32,
                   child: Center(
-                    child: Text(
-                      widget.images[currentIndex].title ?? "Image",
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.black, fontSize: 16.0),
-                    ),
+                    child: FutureBuilder<String?>(
+                        future: widget.images[currentIndex].getFilename(),
+                        builder: (context, snapshot) {
+                          String text = snapshot.hasData ? snapshot.data! : "Image";
+                          return Text(
+                            text,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.black, fontSize: 16.0),
+                          );
+                        }),
                   ),
                 ),
                 Expanded(
@@ -109,7 +137,11 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
                           duration: const Duration(milliseconds: 300),
                           top: showBottomMenu ? 0 : height,
                           bottom: -20,
-                          child: TagManager(widget.images[currentIndex]))
+                          child: TagManager(widget.images[currentIndex], callback: () {
+                            setState(() {
+                              showBottomMenu = false;
+                            });
+                          }))
                     ],
                   ),
                 )

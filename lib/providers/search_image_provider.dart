@@ -3,28 +3,22 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:photo_taginator/models/tagged_image.dart';
 import 'package:photo_taginator/providers/database_provider.dart';
-import 'package:photo_taginator/providers/tag_provider.dart';
 import 'package:photo_taginator/utils/search_image_filter.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:unique_list/unique_list.dart';
 
 class SearchImageProvider extends ChangeNotifier {
-  final TagProvider tagProvider;
   final UniqueList<TaggedImage> images = UniqueList();
   SearchImageFiler searchImageFilter = SearchImageFiler();
 
-  SearchImageProvider(this.tagProvider, {SearchImageFiler? searchImageFilter}) {
+  SearchImageProvider({SearchImageFiler? searchImageFilter}) {
     if (searchImageFilter != null) {
       this.searchImageFilter = searchImageFilter;
     }
-    refreshAsync();
+    refresh();
   }
 
-  void refresh() async {
-    return refreshAsync();
-  }
-
-  Future<void> refreshAsync() async {
+  Future<void> refresh() async {
     images.clear();
     Database database = await DatabaseProvider().getDatabase();
     log("Loading search results...");
@@ -48,6 +42,7 @@ class SearchImageProvider extends ChangeNotifier {
 
   void setSearchFilter(SearchImageFiler searchImageFiler) {
     searchImageFilter = searchImageFiler;
+    refresh();
   }
 
   @override

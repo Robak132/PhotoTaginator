@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:photo_taginator/models/tag.dart';
 import 'package:photo_taginator/models/tagged_image.dart';
 import 'package:photo_taginator/providers/tag_provider.dart';
-import 'package:photo_taginator/providers/tagged_image_provider.dart';
 import 'package:photo_taginator/utils/dialogs.dart';
 import 'package:provider/provider.dart';
 
 class TagManager extends StatefulWidget {
-  const TagManager(this.image, {super.key});
-
+  const TagManager(this.image, {super.key, this.callback});
+  final Function? callback;
   final TaggedImage image;
 
   @override
@@ -26,8 +25,8 @@ class _TagManagerState extends State<TagManager> {
 
   @override
   void dispose() {
-    super.dispose();
     controller.dispose();
+    super.dispose();
   }
 
   Future<void> onChanged(TagProvider tagProvider, Map<Tag, bool> valuesMap, Tag tag, bool newValue) async {
@@ -57,7 +56,7 @@ class _TagManagerState extends State<TagManager> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<TagProvider, TaggedImageProvider>(builder: (context, tagProvider, taggedImageProvider, child) {
+    return Consumer<TagProvider>(builder: (context, tagProvider, child) {
       List<Tag> tags = tagProvider.tags;
       Map<Tag, bool> valuesMap = {for (Tag tag in tags) tag: widget.image.tags.contains(tag)};
 
@@ -68,27 +67,34 @@ class _TagManagerState extends State<TagManager> {
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           padding: const EdgeInsets.all(15),
-          child: Stack(children: [
-            ListView.builder(
-                itemCount: tags.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return GestureDetector(
-                    onLongPress: () => onRemoved(context, tagProvider, tags[index]),
-                    child: CheckboxListTile(
+          child: Stack(
+            alignment: Alignment.topCenter,
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height - 275,
+                child: ListView.builder(
+                  itemCount: tags.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return GestureDetector(
+                      onLongPress: () => onRemoved(context, tagProvider, tags[index]),
+                      child: CheckboxListTile(
                         title: Text(tags[index].name),
                         value: valuesMap[tags[index]],
-                        onChanged: (value) => onChanged(tagProvider, valuesMap, tags[index], value!)),
-                  );
-                }),
-            Positioned(
-              bottom: 28,
-              right: 8,
-              child: FloatingActionButton(
-                child: const Icon(Icons.add),
-                onPressed: () => onAdded(context, tagProvider),
+                        onChanged: (value) => onChanged(tagProvider, valuesMap, tags[index], value!),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-          ]),
+              Positioned(
+                bottom: 28,
+                child: FloatingActionButton(
+                  child: const Icon(Icons.add),
+                  onPressed: () => onAdded(context, tagProvider),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     });

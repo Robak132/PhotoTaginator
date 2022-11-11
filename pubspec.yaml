@@ -46,6 +46,7 @@ dependencies:
     sdk: flutter
   unique_list: 1.0.1
   share_plus: 4.5.3
+  back_button_interceptor: ^6.0.2
 
 dev_dependencies:
   flutter_test:

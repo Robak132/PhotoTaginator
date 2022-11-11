@@ -12,9 +12,9 @@ void main() {
       ChangeNotifierProvider<TagProvider>(create: (context) => TagProvider()),
       ChangeNotifierProvider<TaggedImageProvider>(create: (context) => TaggedImageProvider()),
       ChangeNotifierProxyProvider<TagProvider, SearchImageProvider>(
-          create: (BuildContext context) => SearchImageProvider(Provider.of<TagProvider>(context, listen: false)),
-          update: (_, tagProvider, searchImageProvider) =>
-              SearchImageProvider(tagProvider, searchImageFilter: searchImageProvider!.searchImageFilter))
+          create: (BuildContext context) => SearchImageProvider(),
+          update: (_, __, searchImageProvider) =>
+              searchImageProvider!..setSearchFilter(searchImageProvider.searchImageFilter))
     ],
     child: const MyApp(),
   ));

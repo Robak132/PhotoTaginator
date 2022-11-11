@@ -19,7 +19,7 @@ class TaggedImageProvider extends ChangeNotifier {
     for (Album album in albums) {
       final List<Medium> mediums = (await album.listMedia()).items;
       for (Medium media in mediums) {
-        add(TaggedImage(media.id, title: media.title));
+        add(TaggedImage(media.id));
       }
     }
     log("Gallery loaded");
