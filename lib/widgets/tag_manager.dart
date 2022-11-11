@@ -6,8 +6,7 @@ import 'package:photo_taginator/utils/dialogs.dart';
 import 'package:provider/provider.dart';
 
 class TagManager extends StatefulWidget {
-  const TagManager(this.image, {super.key, this.callback});
-  final Function? callback;
+  const TagManager(this.image, {super.key});
   final TaggedImage image;
 
   @override
@@ -32,10 +31,10 @@ class _TagManagerState extends State<TagManager> {
   Future<void> onChanged(TagProvider tagProvider, Map<Tag, bool> valuesMap, Tag tag, bool newValue) async {
     if (newValue) {
       widget.image.addTag(tag);
-      await tagProvider.addImage(tag, widget.image);
+      await tagProvider.addImage(widget.image, tag);
     } else {
       widget.image.removeTag(tag);
-      await tagProvider.removeImage(tag, widget.image);
+      await tagProvider.removeImage(widget.image, tag);
     }
     valuesMap[tag] = newValue;
   }
@@ -56,47 +55,54 @@ class _TagManagerState extends State<TagManager> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<TagProvider>(builder: (context, tagProvider, child) {
-      List<Tag> tags = tagProvider.tags;
-      Map<Tag, bool> valuesMap = {for (Tag tag in tags) tag: widget.image.tags.contains(tag)};
+    return ClipRRect(
+      borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+      child: Container(
+        color: Colors.white,
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        padding: const EdgeInsets.all(15),
+        child: FutureBuilder(
+            future: widget.image.fetchTags(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return Consumer<TagProvider>(builder: (context, tagProvider, child) {
+                List<Tag> tags = tagProvider.tags;
+                Map<Tag, bool> valuesMap = {for (Tag tag in tags) tag: widget.image.tags.contains(tag)};
 
-      return ClipRRect(
-        borderRadius: const BorderRadius.all(Radius.circular(20.0)),
-        child: Container(
-          color: Colors.white,
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          padding: const EdgeInsets.all(15),
-          child: Stack(
-            alignment: Alignment.topCenter,
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height - 275,
-                child: ListView.builder(
-                  itemCount: tags.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onLongPress: () => onRemoved(context, tagProvider, tags[index]),
-                      child: CheckboxListTile(
-                        title: Text(tags[index].name),
-                        value: valuesMap[tags[index]],
-                        onChanged: (value) => onChanged(tagProvider, valuesMap, tags[index], value!),
+                return Stack(
+                  alignment: Alignment.topCenter,
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height - 275,
+                      child: ListView.builder(
+                        itemCount: tags.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GestureDetector(
+                            onLongPress: () => onRemoved(context, tagProvider, tags[index]),
+                            child: CheckboxListTile(
+                              title: Text(tags[index].name),
+                              value: valuesMap[tags[index]],
+                              onChanged: (value) => onChanged(tagProvider, valuesMap, tags[index], value!),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-              ),
-              Positioned(
-                bottom: 28,
-                child: FloatingActionButton(
-                  child: const Icon(Icons.add),
-                  onPressed: () => onAdded(context, tagProvider),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    });
+                    ),
+                    Positioned(
+                      bottom: 28,
+                      child: FloatingActionButton(
+                        child: const Icon(Icons.add),
+                        onPressed: () => onAdded(context, tagProvider),
+                      ),
+                    )
+                  ],
+                );
+              });
+            }),
+      ),
+    );
   }
 }

@@ -42,7 +42,7 @@ class TagProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addImage(Tag tag, TaggedImage image) async {
+  Future<void> addImage(TaggedImage image, Tag tag) async {
     Database database = await DatabaseProvider().getDatabase();
     int index = tags.indexOf(tag);
     tags[index].images.add(image);
@@ -51,11 +51,18 @@ class TagProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> removeImage(Tag tag, TaggedImage image) async {
+  Future<void> removeImage(TaggedImage image, [Tag? tag]) async {
     Database database = await DatabaseProvider().getDatabase();
-    int index = tags.indexOf(tag);
-    tags[index].images.remove(image);
-    await database.delete("CONNECTIONS", where: "IMAGE_ID = ? AND TAG_ID = ?", whereArgs: [image.id, tag.id]);
+    if (tag != null) {
+      int index = tags.indexOf(tag);
+      tags[index].images.remove(image);
+      await database.delete("CONNECTIONS", where: "IMAGE_ID = ? AND TAG_ID = ?", whereArgs: [image.id, tag.id]);
+    } else {
+      for (Tag tag in tags) {
+        tag.images.remove(image);
+      }
+      await database.delete("CONNECTIONS", where: "IMAGE_ID = ?", whereArgs: [image.id]);
+    }
     notifyListeners();
   }
 

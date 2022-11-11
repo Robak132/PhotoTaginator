@@ -30,6 +30,11 @@ class TaggedImageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void remove(TaggedImage image) {
+    images.remove(image);
+    notifyListeners();
+  }
+
   @override
   void notifyListeners() {
     // log("Reloading TaggedImageProvider...");
