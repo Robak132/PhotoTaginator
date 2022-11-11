@@ -9,7 +9,7 @@ import 'package:unique_list/unique_list.dart';
 
 class TagProvider extends ChangeNotifier {
   final UniqueList<Tag> tags = UniqueList();
-  get notEmptyTags => tags.where((Tag tag) => tag.images.isNotEmpty).toUniqueList();
+  UniqueList<Tag> get notEmptyTags => tags.where((Tag tag) => tag.images.isNotEmpty).toUniqueList();
 
   TagProvider() {
     refresh();
@@ -57,5 +57,11 @@ class TagProvider extends ChangeNotifier {
     tags[index].images.remove(image);
     await database.delete("CONNECTIONS", where: "IMAGE_ID = ? AND TAG_ID = ?", whereArgs: [image.id, tag.id]);
     notifyListeners();
+  }
+
+  @override
+  void notifyListeners() {
+    // log("Reloading TagProvider...");
+    super.notifyListeners();
   }
 }

@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:photo_gallery/photo_gallery.dart';
 import 'package:photo_taginator/models/tagged_image.dart';
+import 'package:photo_taginator/utils/dialogs.dart';
 import 'package:photo_taginator/widgets/tag_manager.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:share_plus/share_plus.dart';
 
 class SinglePhotoView extends StatefulWidget {
   SinglePhotoView({Key? key, required this.images, this.initialIndex = 0})
@@ -22,14 +27,24 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
   late int currentIndex = widget.initialIndex;
   bool showBottomMenu = false;
 
-  void onTap(int index, TaggedImage image) {
+  Future<void> onTap(BuildContext context, int index, TaggedImage image) async {
     switch (index) {
       case 0:
+        File file = await PhotoGallery.getFile(mediumId: image.id);
+        Share.shareXFiles([XFile(file.path)]);
+        break;
       case 1:
+        bool? result =
+            await createRemoveDialog(context, "Remove image?", "Do you want to remove this image from your memory?");
+        if (result == true) {
+          // TODO: Remove image
+        }
+        break;
       case 2:
         setState(() {
           showBottomMenu = !showBottomMenu;
         });
+        break;
     }
   }
 
@@ -44,7 +59,7 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
           centerTitle: true,
           title: const Text('Gallery')),
       bottomNavigationBar: BottomNavigationBar(
-        onTap: (index) => onTap(index, widget.images[currentIndex]),
+        onTap: (index) async => await onTap(context, index, widget.images[currentIndex]),
         backgroundColor: Colors.white,
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.black,
@@ -61,36 +76,44 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
           builder: (context, snapshot) {
             return Container(
               constraints: BoxConstraints.expand(height: MediaQuery.of(context).size.height),
-              child: Stack(
-                alignment: Alignment.center,
-                children: <Widget>[
-                  PhotoViewGallery.builder(
-                    scrollPhysics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: widget.images.length,
-                    pageController: widget.pageController,
-                    gaplessPlayback: true,
-                    onPageChanged: (index) => setState(() => currentIndex = index),
-                    scrollDirection: Axis.horizontal,
-                    builder: (context, index) => PhotoViewGalleryPageOptions(
-                        imageProvider: PhotoProvider(mediumId: widget.images[index].id),
-                        initialScale: PhotoViewComputedScale.contained,
-                        minScale: PhotoViewComputedScale.contained,
-                        maxScale: PhotoViewComputedScale.covered * 1.8),
+              child: Column(children: [
+                SizedBox(
+                  height: 32,
+                  child: Center(
+                    child: Text(
+                      widget.images[currentIndex].title ?? "Image",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.black, fontSize: 16.0),
+                    ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(40.0),
-                    alignment: Alignment.topCenter,
-                    child: Text(widget.images[currentIndex].title ?? "Image",
-                        textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 17.0)),
+                ),
+                Expanded(
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: <Widget>[
+                      PhotoViewGallery.builder(
+                        scrollPhysics: const AlwaysScrollableScrollPhysics(),
+                        itemCount: widget.images.length,
+                        pageController: widget.pageController,
+                        gaplessPlayback: true,
+                        onPageChanged: (index) => setState(() => currentIndex = index),
+                        scrollDirection: Axis.horizontal,
+                        builder: (context, index) => PhotoViewGalleryPageOptions(
+                            imageProvider: PhotoProvider(mediumId: widget.images[index].id),
+                            initialScale: PhotoViewComputedScale.contained,
+                            minScale: PhotoViewComputedScale.contained,
+                            maxScale: PhotoViewComputedScale.covered * 1.8),
+                      ),
+                      AnimatedPositioned(
+                          curve: Curves.linear,
+                          duration: const Duration(milliseconds: 300),
+                          top: showBottomMenu ? 0 : height,
+                          bottom: -20,
+                          child: TagManager(widget.images[currentIndex]))
+                    ],
                   ),
-                  AnimatedPositioned(
-                      curve: Curves.linear,
-                      duration: const Duration(milliseconds: 300),
-                      top: showBottomMenu ? 0 : height,
-                      bottom: -20,
-                      child: TagManager(widget.images[currentIndex]))
-                ],
-              ),
+                )
+              ]),
             );
           }),
     );

@@ -37,9 +37,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
           onRefresh: () async => taggedImageProvider.refresh(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Expanded(child: GalleryWidget(images: images)),
-            ],
+            children: <Widget>[Expanded(child: GalleryWidget(images: images))],
           ),
         );
       }),

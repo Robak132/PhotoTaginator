@@ -29,4 +29,10 @@ class TaggedImageProvider extends ChangeNotifier {
     images.add(image);
     notifyListeners();
   }
+
+  @override
+  void notifyListeners() {
+    // log("Reloading TaggedImageProvider...");
+    super.notifyListeners();
+  }
 }

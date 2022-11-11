@@ -61,15 +61,12 @@ class _TagManagerState extends State<TagManager> {
       List<Tag> tags = tagProvider.tags;
       Map<Tag, bool> valuesMap = {for (Tag tag in tags) tag: widget.image.tags.contains(tag)};
 
-      double height = MediaQuery.of(context).size.height;
-      double width = MediaQuery.of(context).size.width;
-
       return ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(20.0)),
         child: Container(
           color: Colors.white,
-          width: width,
-          height: height,
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
           padding: const EdgeInsets.all(15),
           child: Stack(children: [
             ListView.builder(

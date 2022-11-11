@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:photo_taginator/views/gallery_view.dart';
-import 'package:photo_taginator/views/settings_view.dart';
+import 'package:photo_taginator/views/search_view.dart';
 import 'package:photo_taginator/views/tagged_gallery.dart';
 
 class MainView extends StatefulWidget {
@@ -18,7 +18,7 @@ class _MainViewState extends State<MainView> {
   @override
   void initState() {
     super.initState();
-    _views = [const SettingsView(), const GalleryView(), const TaggedGalleryView()];
+    _views = [const TaggedGalleryView(), const GalleryView(), const SearchView()];
     _pageController = PageController(initialPage: 1);
   }
 
@@ -34,9 +34,9 @@ class _MainViewState extends State<MainView> {
       body: PageView(controller: _pageController, physics: const NeverScrollableScrollPhysics(), children: _views),
       bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+            BottomNavigationBarItem(icon: Icon(Icons.photo_album_rounded), label: 'Albums'),
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Gallery'),
-            BottomNavigationBarItem(icon: Icon(Icons.photo_album_rounded), label: 'Albums')
+            BottomNavigationBarItem(icon: Icon(Icons.image_search_outlined), label: 'Search'),
           ],
           currentIndex: _bottomNavBarIndex,
           selectedItemColor: Colors.green,

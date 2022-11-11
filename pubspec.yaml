@@ -44,7 +44,8 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  unique_list: ^1.0.1
+  unique_list: 1.0.1
+  share_plus: 4.5.3
 
 dev_dependencies:
   flutter_test:
