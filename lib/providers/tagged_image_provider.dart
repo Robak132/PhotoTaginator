@@ -1,6 +1,8 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_gallery/photo_gallery.dart';
 import 'package:photo_taginator/models/tagged_image.dart';
 import 'package:unique_list/unique_list.dart';
@@ -9,7 +11,18 @@ class TaggedImageProvider extends ChangeNotifier {
   final UniqueList<TaggedImage> images = UniqueList();
 
   TaggedImageProvider() {
-    refresh();
+    promptPermissionSetting().then((value) {
+      log("Permissions: $value");
+      refresh();
+    });
+  }
+
+  static Future<bool> promptPermissionSetting() async {
+    if (Platform.isIOS && await Permission.storage.request().isGranted && await Permission.photos.request().isGranted ||
+        Platform.isAndroid && await Permission.storage.request().isGranted) {
+      return true;
+    }
+    return false;
   }
 
   Future<void> refresh() async {
@@ -19,7 +32,8 @@ class TaggedImageProvider extends ChangeNotifier {
     for (Album album in albums) {
       final List<Medium> mediums = (await album.listMedia()).items;
       for (Medium media in mediums) {
-        add(TaggedImage(media.id));
+        images.add(TaggedImage(media.id));
+        super.notifyListeners();
       }
     }
     log("Gallery loaded");
@@ -37,7 +51,7 @@ class TaggedImageProvider extends ChangeNotifier {
 
   @override
   void notifyListeners() {
-    // log("Reloading TaggedImageProvider...");
+    log("Reloading TaggedImageProvider...");
     super.notifyListeners();
   }
 }

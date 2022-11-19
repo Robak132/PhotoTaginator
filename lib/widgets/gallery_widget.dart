@@ -35,8 +35,12 @@ class GalleryWidget extends StatelessWidget {
                   height: 300,
                   fit: BoxFit.cover),
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SinglePhotoView(images: images, initialIndex: index)));
+                if (images.isNotEmpty) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SinglePhotoView(images: images, initialIndex: index)),
+                  );
+                }
               });
         },
       ),

@@ -11,7 +11,15 @@ Future<String?> createAddDialog(BuildContext context, TextEditingController cont
           keyboardType: TextInputType.visiblePassword,
           controller: controller,
           decoration: InputDecoration(hintText: hint)),
-      actions: [TextButton(onPressed: () => Navigator.of(context).pop(controller.text), child: const Text("Submit"))],
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(controller.text);
+            controller.clear();
+          },
+          child: const Text("Submit"),
+        )
+      ],
     ),
   );
 }

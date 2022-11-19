@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_gallery/photo_gallery.dart';
 import 'package:photo_taginator/models/tagged_image.dart';
@@ -29,6 +30,7 @@ class SinglePhotoView extends StatefulWidget {
 
 class _SinglePhotoViewState extends State<SinglePhotoView> {
   late int currentIndex = widget.initialIndex;
+  late List<TaggedImage> images = widget.images;
   bool showBottomMenu = false;
 
   Future<void> onTap(BuildContext context, int index, TaggedImage image) async {
@@ -38,29 +40,23 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
         await Share.shareXFiles([XFile(file.path)]);
         break;
       case 1:
+        final TaggedImageProvider taggedImageProvider = Provider.of<TaggedImageProvider>(context, listen: false);
+        final TagProvider tagProvider = Provider.of<TagProvider>(context, listen: false);
+
         bool? result = await createRemoveDialog(
           context,
           "Remove image?",
-          "Do you want to remove this image from your memory?",
+          "Do you wut to remove this image from your memory?",
         );
         if (result == true) {
-          if (!mounted) return;
-          Provider.of<TaggedImageProvider>(context, listen: false).remove(image);
-          await Provider.of<TagProvider>(context, listen: false).removeImage(image);
-
-          if (widget.images.isEmpty) {
+          taggedImageProvider.remove(image);
+          await tagProvider.removeImage(image);
+          await image.delete();
+          if (images.isEmpty) {
             if (!mounted) return;
-            Navigator.of(context).pop();
-          }
-
-          if (widget.images.length > currentIndex + 1) {
-            setState(() {
-              currentIndex++;
-            });
+            Navigator.pop(context);
           } else {
-            setState(() {
-              currentIndex--;
-            });
+            setState(() {});
           }
         }
         break;
@@ -70,6 +66,10 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
         });
         break;
     }
+  }
+
+  void removeImage(BuildContext context, TaggedImage image) {
+    Provider.of<TaggedImageProvider>(context, listen: false).remove(image);
   }
 
   @override
@@ -111,10 +111,15 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
         unselectedItemColor: Colors.black,
         showUnselectedLabels: false,
         showSelectedLabels: false,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.share), label: 'Share'),
-          BottomNavigationBarItem(icon: Icon(Icons.delete), label: 'Remove'),
-          BottomNavigationBarItem(icon: Icon(Icons.tag), label: 'Tag')
+        items: <BottomNavigationBarItem>[
+          const BottomNavigationBarItem(icon: Icon(Icons.share), label: 'Share'),
+          const BottomNavigationBarItem(icon: Icon(Icons.delete), label: 'Remove'),
+          BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                'assets/tag.svg',
+                width: IconTheme.of(context).size,
+              ),
+              label: 'Tag')
         ],
       ),
       body: Container(
@@ -124,7 +129,7 @@ class _SinglePhotoViewState extends State<SinglePhotoView> {
             height: 32,
             child: Center(
               child: FutureBuilder<String?>(
-                future: widget.images[currentIndex].getFilename(),
+                future: images[currentIndex].getFilename(),
                 builder: (context, snapshot) {
                   String text = snapshot.hasData ? snapshot.data! : "Image";
                   return Text(

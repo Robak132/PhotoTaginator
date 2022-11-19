@@ -68,7 +68,7 @@ class TagProvider extends ChangeNotifier {
 
   @override
   void notifyListeners() {
-    // log("Reloading TagProvider...");
+    log("Reloading TagProvider...");
     super.notifyListeners();
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:photo_gallery/photo_gallery.dart';
 import 'package:photo_taginator/models/tag.dart';
@@ -15,6 +16,11 @@ class TaggedImage implements Comparable<TaggedImage> {
   }
 
   Future<String?> getFilename() async => (await PhotoGallery.getMedium(mediumId: id)).filename;
+
+  Future<void> delete() async {
+    File file = (await PhotoGallery.getFile(mediumId: id));
+    await file.delete();
+  }
 
   void addTag(Tag tag) {
     if (!tags.contains(tag)) {
