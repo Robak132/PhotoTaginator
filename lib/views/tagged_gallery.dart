@@ -55,8 +55,7 @@ class _TaggedGalleryViewState extends State<TaggedGalleryView> with AutomaticKee
                             ),
                             GalleryWidget(
                                 images: tag.images,
-                                onImageError: (String imageID) {
-                                  TaggedImage image = TaggedImage(imageID);
+                                onImageError: (TaggedImage image) {
                                   log("Removing $image from database due to errors");
                                   tagProvider.removeImage(image, tag);
                                 })

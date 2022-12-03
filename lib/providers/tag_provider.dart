@@ -23,7 +23,7 @@ class TagProvider extends ChangeNotifier {
     for (Tag tag in query.map((entity) => Tag(id: entity["ID"] as int, name: entity["NAME"] as String))) {
       await tag.fetchImages();
       tags.add(tag);
-      notifyListeners();
+      super.notifyListeners();
     }
     log("Tags loaded");
   }

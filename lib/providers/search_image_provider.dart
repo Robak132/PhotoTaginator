@@ -22,15 +22,12 @@ class SearchImageProvider extends ChangeNotifier {
     images.clear();
     Database database = await DatabaseProvider().getDatabase();
     log("Loading search results...");
-    List<Map<String, Object?>> query = await database.query(
-      "CONNECTIONS",
-      columns: ["IMAGE_ID, GROUP_CONCAT(TAG_ID) AS TAGS"],
-      groupBy: "IMAGE_ID",
-      distinct: true,
-    );
+    List<Map<String, Object?>> query = await database.rawQuery(
+        "SELECT ID, (SELECT GROUP_CONCAT(C.TAG_ID) FROM CONNECTIONS C WHERE C.IMAGE_ID=ID) AS TAGS FROM IMAGES");
     for (Map<String, Object?> map in query) {
-      TaggedImage image = TaggedImage(map["IMAGE_ID"] as String);
-      List<int> tags = [for (String id in (map["TAGS"] as String).split(",")) int.parse(id)];
+      TaggedImage image = TaggedImage(map["ID"] as String);
+      List<String> tagsString = (map["TAGS"] == null) ? [] : (map["TAGS"] as String).split(",");
+      List<int> tags = [for (String id in tagsString) int.parse(id)];
 
       if (searchImageFilter.test(tags)) {
         images.add(image);
@@ -43,11 +40,5 @@ class SearchImageProvider extends ChangeNotifier {
   void setSearchFilter(SearchImageFiler searchImageFiler) {
     searchImageFilter = searchImageFiler;
     refresh();
-  }
-
-  @override
-  void notifyListeners() {
-    // log("Reloading SearchImageProvider...");
-    super.notifyListeners();
   }
 }

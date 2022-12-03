@@ -1,10 +1,13 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_gallery/photo_gallery.dart';
 import 'package:photo_taginator/models/tagged_image.dart';
+import 'package:photo_taginator/providers/database_provider.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:unique_list/unique_list.dart';
 
 class TaggedImageProvider extends ChangeNotifier {
@@ -27,21 +30,26 @@ class TaggedImageProvider extends ChangeNotifier {
 
   Future<void> refresh() async {
     images.clear();
+    await PhotoGallery.cleanCache();
     log("Loading gallery...");
     List<Album> albums = await PhotoGallery.listAlbums(mediumType: MediumType.image);
     for (Album album in albums) {
-      final List<Medium> mediums = (await album.listMedia()).items;
-      for (Medium media in mediums) {
-        images.add(TaggedImage(media.id));
-        super.notifyListeners();
+      if (album.id == "__ALL__") {
+        final List<Medium> mediums = (await album.listMedia()).items;
+        for (Medium media in mediums) {
+          await add(TaggedImage(media.id), true);
+        }
+        break;
       }
     }
     log("Gallery loaded");
   }
 
-  void add(TaggedImage image) {
+  Future<void> add(TaggedImage image, [silent = false]) async {
+    Database database = await DatabaseProvider().getDatabase();
+    await database.insert("IMAGES", {"ID": image.id}, conflictAlgorithm: ConflictAlgorithm.ignore);
     images.add(image);
-    notifyListeners();
+    notifyListeners(silent);
   }
 
   void remove(TaggedImage image) {
@@ -50,8 +58,8 @@ class TaggedImageProvider extends ChangeNotifier {
   }
 
   @override
-  void notifyListeners() {
-    log("Reloading TaggedImageProvider...");
+  void notifyListeners([silent = false]) {
+    if (!silent) log("Reloading TaggedImageProvider...");
     super.notifyListeners();
   }
 }

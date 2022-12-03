@@ -9,7 +9,7 @@ class GalleryWidget extends StatelessWidget {
   const GalleryWidget({Key? key, required this.images, this.onImageError}) : super(key: key);
 
   final List<TaggedImage> images;
-  final Function(String imageID)? onImageError;
+  final Function(TaggedImage image)? onImageError;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class GalleryWidget extends StatelessWidget {
                   onImageError: (exception, stackTrace) {
                     log(exception.toString());
                     if (onImageError != null) {
-                      onImageError!(images[index].id);
+                      onImageError!(images[index]);
                     }
                   },
                   height: 300,
